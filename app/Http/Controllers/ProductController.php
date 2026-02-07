@@ -3,27 +3,29 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\Category;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
     public function index(Request $request)
     {
-        //get data products
-        $products = DB::table('products')
-            ->when($request->input('name'), function ($query, $name) {
-                return $query->where('name', 'like', '%' . $name . '%');
+        $query = Product::with('category')
+            ->when($request->input('name'), function ($q, $name) {
+                $q->where('name', 'like', '%' . $name . '%');
             })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-        //sort by created_at desc
+            ->orderBy('created_at', 'desc');
+
+        $products = $query->paginate(10);
 
         return view('pages.products.index', compact('products'));
     }
 
     public function create()
     {
-        $categories = DB::table('categories')->get();
+        $categories = Category::all();
         return view('pages.products.create', compact('categories'));
     }
 
@@ -33,21 +35,20 @@ class ProductController extends Controller
             'name' => 'required|min:3|unique:products',
             'price' => 'required|integer',
             'stock' => 'required|integer',
-            'category_id' => 'required',
-            'image' => 'required|image|mimes:png,jpg,jpeg'
+            'category_id' => 'required|exists:categories,id',
+            'image' => 'required|image|mimes:png,jpg,jpeg,svg|max:2048',
         ]);
 
-        $filename = time() . '.' . $request->image->extension();
-        $request->image->storeAs('public/products', $filename);
-        $data = $request->all();
+        $filename = null;
+        if ($request->hasFile('image')) {
+            $filename = time() . '.' . $request->image->extension();
+            $request->image->storeAs('public/products', $filename);
+        }
 
-        $category = DB::table('categories')->where('id', $request->category_id)->first();
-
-        $product = new \App\Models\Product;
+        $product = new Product();
         $product->name = $request->name;
         $product->price = (int) $request->price;
         $product->stock = (int) $request->stock;
-        $product->category = $category->name;
         $product->category_id = $request->category_id;
         $product->image = $filename;
         $product->save();
@@ -57,24 +58,48 @@ class ProductController extends Controller
 
     public function edit($id)
     {
-        $product = \App\Models\Product::findOrFail($id);
-        $categories = DB::table('categories')->get();
+        $product = Product::findOrFail($id);
+        $categories = Category::all();
         return view('pages.products.edit', compact('product', 'categories'));
     }
 
     public function update(Request $request, $id)
     {
-        $data = $request->all();
-        $product = \App\Models\Product::findOrFail($id);
-        $category = DB::table('categories')->where('id', $request->category_id)->first();
-        $data['category'] = $category->name;
-        $product->update($data);
+        $product = Product::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|min:3|unique:products,name,' . $product->id,
+            'price' => 'required|integer',
+            'stock' => 'required|integer',
+            'category_id' => 'required|exists:categories,id',
+            'image' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
+        ]);
+
+        if ($request->hasFile('image')) {
+            // Hapus image lama jika ada
+            if ($product->image && Storage::exists('public/products/' . $product->image)) {
+                Storage::delete('public/products/' . $product->image);
+            }
+            $filename = time() . '.' . $request->image->extension();
+            $request->image->storeAs('public/products', $filename);
+            $product->image = $filename;
+        }
+
+        $product->name = $request->name;
+        $product->price = (int) $request->price;
+        $product->stock = (int) $request->stock;
+        $product->category_id = $request->category_id;
+        $product->save();
+
         return redirect()->route('product.index')->with('success', 'Product successfully updated');
     }
 
     public function destroy($id)
     {
-        $product = \App\Models\Product::findOrFail($id);
+        $product = Product::findOrFail($id);
+        if ($product->image && Storage::exists('public/products/' . $product->image)) {
+            Storage::delete('public/products/' . $product->image);
+        }
         $product->delete();
         return redirect()->route('product.index')->with('success', 'Product successfully deleted');
     }

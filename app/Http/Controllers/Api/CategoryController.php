@@ -10,6 +10,15 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
+      // Base URL untuk storage public
+    private function fullImageUrl(?string $image): string
+    {
+        if (!$image) {
+            return asset('storage/categories/default.png'); // fallback jika null
+        }
+        return asset('storage/categories/' . $image);
+    }
+
     // GET /api/categories
     public function index()
     {

@@ -64,15 +64,17 @@
                                                 <td>{{ $product->name }}
                                                 </td>
                                                 <td>
-                                                    {{ $product->category }}
+                                                    {{ $product->category?->name ?? '-' }}
                                                 </td>
+
                                                 <td>
                                                     {{ $product->price }}
                                                 </td>
                                                 <td>
                                                     @if ($product->image)
                                                         <img src="{{ asset('storage/products/' . $product->image) }}"
-                                                            alt="" width="100px" class="img-thumbnail">
+                                                            alt="{{ $product->image }}" width="100px"
+                                                            class="img-thumbnail">
                                                     @else
                                                         <span class="badge badge-danger">No Image</span>
                                                     @endif

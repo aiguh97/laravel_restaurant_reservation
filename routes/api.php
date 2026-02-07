@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ProductController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,6 +34,7 @@ Route::apiResource('orders', \App\Http\Controllers\Api\OrderController::class)->
 
 Route::apiResource('categories', CategoryController::class);
 Route::patch('/categories/{category}', [CategoryController::class, 'update']);
+Route::patch('/products/{product}', [ProductController::class, 'update']);
 
 // get categories
 Route::get('list-categories', [\App\Http\Controllers\Api\CategoryController::class, 'index'])->middleware('auth:sanctum');
