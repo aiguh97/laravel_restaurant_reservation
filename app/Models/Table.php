@@ -25,8 +25,9 @@ class Table extends Model
         'position_y',
     ];
 
-      public function reservations()
+         public function reservations()
     {
-        return $this->hasMany(TableReservation::class);
+        return $this->hasMany(TableReservation::class, 'table_id');
     }
+
 }

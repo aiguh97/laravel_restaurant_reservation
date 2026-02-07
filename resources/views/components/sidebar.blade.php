@@ -1,52 +1,52 @@
 <div class="main-sidebar sidebar-style-2">
     <aside id="sidebar-wrapper">
         <div class="sidebar-brand">
-            <a href="index.html">POS BAHRI</a>
+            <a href="{{ url('/') }}">Restoguh</a>
         </div>
         <div class="sidebar-brand sidebar-brand-sm">
-            <a href="index.html">PB</a>
+            <a href="{{ url('/') }}">PB</a>
         </div>
+
         <ul class="sidebar-menu">
             <li class="menu-header">Dashboard</li>
-            {{-- <li class="nav-item dropdown">
-                <a href="#" class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>Dashboard</span></a>
-                <ul class="dropdown-menu">
-                    <li class='{{ Request::is('dashboard-general-dashboard') ? 'active' : '' }}'>
-                        <a class="nav-link" href="{{ url('dashboard-general-dashboard') }}">General Dashboard</a>
-                    </li>
 
-                </ul>
-            </li> --}}
-
-            <li class="nav-item">
-                <a href="{{ route('user.index') }}" class="nav-link "><i class="fas fa-fire"></i><span>Users</span></a>
-
-
-
+            {{-- Users --}}
+            <li class="{{ Request::is('user*') ? 'active' : '' }}">
+                <a href="{{ route('user.index') }}" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span>Users</span>
+                </a>
             </li>
 
-            <li class="nav-item">
-                <a href="{{ route('categories.index') }}" class="nav-link "><i
-                        class="fas fa-fire"></i><span>Categories</span></a>
-
+            {{-- Categories --}}
+            <li class="{{ Request::is('categories*') ? 'active' : '' }}">
+                <a href="{{ route('categories.index') }}" class="nav-link">
+                    <i class="fas fa-tags"></i>
+                    <span>Categories</span>
+                </a>
             </li>
 
-            <li class="nav-item ">
-                <a href="{{ route('product.index') }}" class="nav-link"><i
-                        class="fas fa-fire"></i><span>Products</span></a>
+            {{-- Products with dropdown --}}
+            <li class="nav-item dropdown {{ Request::is('product*') ? 'active' : '' }}">
+                <a href="#" class="nav-link has-dropdown">
+                    <i class="fas fa-box"></i>
+                    <span>Products</span>
+                </a>
                 <ul class="dropdown-menu">
-                    <li>
-                        <a class="nav-link" href="{{ route('product.index') }}">All Products</a>
+                    <li class="{{ Request::is('product') ? 'active' : '' }}">
+                        <a href="{{ route('product.index') }}" class="nav-link">All Products</a>
                     </li>
-
                 </ul>
             </li>
 
-            <li class="nav-item">
-                <a href="{{ route('order.index') }}" class="nav-link "><i
-                        class="fas fa-fire"></i><span>Orders</span></a>
-
+            {{-- Orders --}}
+            <li class="{{ Request::is('order*') ? 'active' : '' }}">
+                <a href="{{ route('order.index') }}" class="nav-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Orders</span>
+                </a>
             </li>
 
+        </ul>
     </aside>
 </div>

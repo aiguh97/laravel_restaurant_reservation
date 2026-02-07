@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Api\ReservationController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -42,4 +42,5 @@ Route::get('/reports/close-cashier', [App\Http\Controllers\Api\ReportController:
 
 // API Resource Tables (Tambahan Baru)
 Route::apiResource('tables', \App\Http\Controllers\Api\TableController::class)->middleware('auth:sanctum');
-Route::post('/reservations', [\App\Http\Controllers\Api\TableController::class, 'store']);
+// API Reservation
+Route::post('/reservations', [ReservationController::class, 'store'])->middleware('auth:sanctum');

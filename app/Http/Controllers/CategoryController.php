@@ -20,16 +20,50 @@ class CategoryController extends Controller
         return view('pages.categories.create');
     }
 
-    //store
-    public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
+public function store(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'image' => 'required|image|mimes:jpg,jpeg,png,svg|max:2048',
+    ]);
 
-        Category::create($request->all());
-        return redirect()->route('categories.index')->with('success', 'Category created successfully');
+    $filename = null;
+    if ($request->hasFile('image')) {
+        $filename = time() . '.' . $request->image->extension();
+        $request->image->storeAs('public/categories', $filename);
     }
+
+    Category::create([
+        'name' => $request->name,
+        'description' => $request->description,
+        'image' => $filename,
+    ]);
+
+    return redirect()->route('categories.index')->with('success', 'Category created successfully');
+}
+
+
+public function update(Request $request, Category $category)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'image' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
+    ]);
+
+    if ($request->hasFile('image')) {
+        $filename = time() . '.' . $request->image->extension();
+        $request->image->storeAs('public/categories', $filename);
+        $category->image = $filename;
+    }
+
+    $category->name = $request->name;
+    $category->save();
+
+    return redirect()->route('categories.index')->with('success', 'Category updated successfully');
+}
+
+
 
     //edit
     public function edit(Category $category)
@@ -37,16 +71,7 @@ class CategoryController extends Controller
         return view('pages.categories.edit', compact('category'));
     }
 
-    //update
-    public function update(Request $request, Category $category)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
 
-        $category->update($request->all());
-        return redirect()->route('categories.index')->with('success', 'Category updated successfully');
-    }
 
     //destroy
     public function destroy(Category $category)
