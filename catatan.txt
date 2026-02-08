@@ -1,0 +1,18 @@
+composer require pragmarx/google2fa
+
+composer require pragmarx/google2fa-qrcode
+
+
+Login (email + password)
+        |
+        |-- jika 2FA OFF → masuk dashboard
+        |
+        |-- jika 2FA ON
+              |
+              → simpan user_id di session
+              → logout sementara
+              → redirect ke halaman OTP
+                          |
+                          → input OTP
+                          |
+                          → valid → login ulang → dashboard

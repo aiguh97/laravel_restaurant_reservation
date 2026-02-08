@@ -47,6 +47,14 @@
                 </a>
             </li>
 
+
+            {{-- Products with dropdown --}}
+            <li class="{{ Request::is('settings*') ? 'active' : '' }}">
+                <a href="{{ route('settings.index') }}" class="nav-link">
+                   <i class="fa-solid fa-gear"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
         </ul>
     </aside>
 </div>

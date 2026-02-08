@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\AuthController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,10 +23,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // post login
-Route::post('login', [\App\Http\Controllers\Api\AuthController::class, 'login']);
-
+Route::post('login', [AuthController::class, 'login']);
+Route::post('/2fa/verify', [AuthController::class, 'verify2FA']);
 // post logout
-Route::post('logout', [\App\Http\Controllers\Api\AuthController::class, 'logout'])->middleware('auth:sanctum');
+Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
+
+
+// Route::middleware('auth:sanctum')->group(function () {
+//     Route::get('/2fa/setup', [ApiTwoFactorController::class, 'setup']);
+//     Route::post('/2fa/enable', [ApiTwoFactorController::class, 'enable']);
+//     Route::post('/2fa/disable', [ApiTwoFactorController::class, 'disable']);
+//     Route::post('/2fa/send-email', [ApiTwoFactorController::class, 'sendEmail']);
+// });
 
 // api resource product
 Route::apiResource('products', \App\Http\Controllers\Api\ProductController::class)->middleware('auth:sanctum');
