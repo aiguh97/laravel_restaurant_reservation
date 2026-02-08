@@ -24,8 +24,10 @@ class User extends Authenticatable
         'phone',
         'roles',
         'two_factor_secret',   // Tambahkan ini
-    'two_factor_enabled',  // Tambahkan ini
-    'two_factor_type',     // Tambahkan ini
+        'two_factor_enabled',  // Tambahkan ini
+        'two_factor_type',     // Tambahkan ini
+        'google_id',
+        'avatar',
     ];
 
     /**
@@ -46,7 +48,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-         'two_factor_enabled' => 'boolean',
-    'two_factor_secret' => 'encrypted',
+        'two_factor_enabled' => 'boolean',
+        'two_factor_secret' => 'encrypted',
     ];
 }
