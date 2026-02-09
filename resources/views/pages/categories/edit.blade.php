@@ -31,7 +31,8 @@
                             name="image"
                             label="Category Image"
                             id="categoryImage"
-                            :oldImage="$category->image ? asset('storage/categories/' . $category->image) : null"
+                            {{-- :oldImage="$category->image ? asset('storage/categories/' . $category->image) : null" --}}
+                            :oldImage="$category->image_path ? Storage::disk('s3')->url($category->image_path) : null"
                         />
 
                         <!-- Name -->

@@ -16,3 +16,17 @@ Login (email + password)
                           → input OTP
                           |
                           → valid → login ulang → dashboard
+
+
+REDIS
+
+redis-cli -u redis://default:Y7MJQ5uwNrgrEK4dklnoFqLjx46L0yF9@redis-14075.c252.ap-southeast-1-1.ec2.cloud.redislabs.com:14075
+
+composer require predis/predis
+php artisan install:broadcasting
+
+Terminal 1 (Laravel API): php artisan serve --host=0.0.0.0 --port=8000 (Penting: --host=0.0.0.0 wajib ada agar Mac mau menerima koneksi dari IP lokal HP).
+
+Terminal 2 (Reverb): php artisan reverb:start --host=0.0.0.0 --port=8080
+
+Terminal 3 (Ngrok): ngrok http 8080 (Ngrok hanya mem-forward port 8080 saja).

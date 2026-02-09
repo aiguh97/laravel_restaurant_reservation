@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\GoogleAuthController;
+use App\Http\Controllers\Api\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,9 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/my-orders', [OrderController::class, 'index']);
+    Route::get('/orders', [OrderController::class, 'allOrders']);
+    Route::get('/orders', [OrderController::class, 'iall']);
     Route::get('/2fa/setup', [ApiTwoFactorController::class, 'setup']);
     Route::post('/2fa/enable', [ApiTwoFactorController::class, 'enable']);
     Route::post('/2fa/disable', [ApiTwoFactorController::class, 'disable']);

@@ -12,10 +12,24 @@ use App\Http\Controllers\{
     OrderController,
     CategoryController
 };
+use Illuminate\Support\Facades\Storage;
 
 // 1. Halaman Depan (Root)
-Route::get('/', function () {
-    return Auth::check() ? redirect()->route('home') : view('pages.auth.login');
+
+Route::get('/minio-test', function () {
+    Storage::disk('s3')->put('test.txt', 'hello from laravel');
+    return 'OK';
+});
+
+
+
+Route::get('/test-upload', function () {
+    try {
+        Storage::disk('s3')->put('test-file.txt', 'Halo MinIO!');
+        return "Upload Berhasil! Cek di dashboard MinIO kamu.";
+    } catch (\Exception $e) {
+        return "Gagal: " . $e->getMessage();
+    }
 });
 
 // 2. Auth & Login

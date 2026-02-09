@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Category;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -20,48 +21,76 @@ class CategoryController extends Controller
         return view('pages.categories.create');
     }
 
-public function store(Request $request)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'image' => 'required|image|mimes:jpg,jpeg,png,svg|max:2048',
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'image' => 'required|image|mimes:jpg,jpeg,png,svg|max:2048',
+        ]);
 
-    $filename = null;
-    if ($request->hasFile('image')) {
-        $filename = time() . '.' . $request->image->extension();
-        $request->image->storeAs('public/categories', $filename);
+        $filename = null;
+        // if ($request->hasFile('image')) {
+        //     $filename = time() . '.' . $request->image->extension();
+        //     $request->image->storeAs('public/categories', $filename);
+        // }
+
+        if ($request->hasFile('image')) {
+            $filename = time() . '.' . $request->image->extension();
+
+            Storage::disk('minio')->putFileAs(
+                'categories',
+                $request->file('image'),
+                $filename
+            );
+        }
+
+        Category::create([
+            'name' => $request->name,
+            'description' => $request->description,
+            'image' => $filename,
+        ]);
+
+        return redirect()->route('categories.index')->with('success', 'Category created successfully');
     }
 
-    Category::create([
-        'name' => $request->name,
-        'description' => $request->description,
-        'image' => $filename,
-    ]);
 
-    return redirect()->route('categories.index')->with('success', 'Category created successfully');
-}
+    public function update(Request $request, Category $category)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
+        ]);
 
+        // if ($request->hasFile('image')) {
+        //     $filename = time() . '.' . $request->image->extension();
+        //     $request->image->storeAs('public/categories', $filename);
+        //     $category->image = $filename;
+        // }
 
-public function update(Request $request, Category $category)
-{
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'image' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
-    ]);
+        if ($request->hasFile('image')) {
 
-    if ($request->hasFile('image')) {
-        $filename = time() . '.' . $request->image->extension();
-        $request->image->storeAs('public/categories', $filename);
-        $category->image = $filename;
+            // hapus file lama (opsional tapi bagus)
+            if ($category->image) {
+                Storage::disk('minio')->delete('categories/' . $category->image);
+            }
+
+            $filename = time() . '.' . $request->image->extension();
+
+            Storage::disk('minio')->putFileAs(
+                'categories',
+                $request->file('image'),
+                $filename
+            );
+
+            $category->image = $filename;
+        }
+
+        $category->name = $request->name;
+        $category->save();
+
+        return redirect()->route('categories.index')->with('success', 'Category updated successfully');
     }
-
-    $category->name = $request->name;
-    $category->save();
-
-    return redirect()->route('categories.index')->with('success', 'Category updated successfully');
-}
 
 
 
@@ -71,12 +100,17 @@ public function update(Request $request, Category $category)
         return view('pages.categories.edit', compact('category'));
     }
 
-
-
     //destroy
     public function destroy(Category $category)
     {
+        // Hapus file dari storage jika ada
+        if ($category->image) {
+            Storage::disk('minio')->delete('categories/' . $category->image);
+        }
+
+        // Hapus record di database
         $category->delete();
+
         return redirect()->route('categories.index')->with('success', 'Category deleted successfully');
     }
 }

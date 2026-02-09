@@ -10,18 +10,36 @@ use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $query = Product::with('category')
-            ->when($request->input('name'), function ($q, $name) {
-                $q->where('name', 'like', '%' . $name . '%');
-            })
-            ->orderBy('created_at', 'desc');
+        $cacheKey = 'products:all';
 
-        $products = $query->paginate(10);
+        $data = Cache::remember($cacheKey, now()->addMinutes(5), function () {
+            return Product::with('category')
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(function ($product) {
+                    return [
+                        'id' => $product->id,
+                        'name' => $product->name,
+                        'description' => $product->description,
+                        'price' => $product->price,
+                        'stock' => $product->stock,
+                        'image' => $product->image
+                            ? asset('storage/products/' . $product->image)
+                            : null,
+                        'category' => $product->category?->name,
+                    ];
+                });
+        });
 
-        return view('pages.products.index', compact('products'));
+        return response()->json([
+            'success' => true,
+            'message' => 'List Data Product',
+            'data' => $data
+        ]);
     }
+
 
     public function create()
     {

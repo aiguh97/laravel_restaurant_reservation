@@ -50,69 +50,84 @@
                                 <div class="clearfix mb-3"></div>
 
                                 <div class="table-responsive">
-                             @php
-use Illuminate\Support\Str;
-@endphp
+                                    @php
+                                        use Illuminate\Support\Str;
+                                    @endphp
 
-<table class="table-striped table">
-    <tr>
-        <th>Image</th>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Created At</th>
-        <th>Action</th>
-    </tr>
-    @foreach ($categories as $category)
-        <tr>
-            <!-- Thumbnail image kecil -->
-          <td>
-    @if($category->image)
-        @php
-            $ext = pathinfo($category->image, PATHINFO_EXTENSION);
-        @endphp
+                                    <table class="table-striped table">
+                                        <tr>
+                                            <th>Image</th>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                            <th>Created At</th>
+                                            <th>Action</th>
+                                        </tr>
+                                        @foreach ($categories as $category)
+                                            <tr>
+                                                {{-- <!-- Thumbnail image kecil -->
+                                                <td>
+                                                    @if ($category->image)
+                                                        @php
+                                                            $ext = pathinfo($category->image, PATHINFO_EXTENSION);
+                                                        @endphp
 
-        @if(in_array(strtolower($ext), ['jpg','jpeg','png','gif']))
-            <img src="{{ asset('storage/categories/' . $category->image) }}"
-                 alt="{{ $category->name }}"
-                 style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
-        @elseif(strtolower($ext) === 'svg')
-            <object type="image/svg+xml"
-                    data="{{ asset('storage/categories/' . $category->image) }}"
-                    style="width:50px; height:50px;">
-                SVG
-            </object>
-        @endif
-    @else
-        <span class="text-muted">No image</span>
-    @endif
-</td>
+                                                        @if (in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'gif']))
+                                                            <img src="{{ asset('storage/categories/' . $category->image) }}"
+                                                                alt="{{ $category->name }}"
+                                                                style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
+                                                        @elseif(strtolower($ext) === 'svg')
+                                                            <object type="image/svg+xml"
+                                                                data="{{ asset('storage/categories/' . $category->image) }}"
+                                                                style="width:50px; height:50px;">
+                                                                SVG
+                                                            </object>
+                                                        @endif
+                                                    @else
+                                                        <span class="text-muted">No image</span>
+                                                    @endif
+                                                </td> --}}
+                                                <td>
+                                        @if ($category->image)
+                                            <img
+                                                src="{{ Storage::disk('minio')->url('categories/'.$category->image) }}"
+                                                alt="{{ $category->name }}"
+                                                style="width:50px; height:50px; object-fit:contain; border-radius:4px;"
+                                            >
+                                        @else
+                                            <span class="text-muted">No image</span>
+                                        @endif
+                                    </td>
 
 
-            <!-- Name limited 33 characters -->
-            <td>{{ Str::limit($category->name, 33) }}</td>
 
-            <!-- Description limited 33 characters -->
-            <td>{{ Str::limit($category->description ?? '', 33) }}</td>
+                                                <!-- Name limited 33 characters -->
+                                                <td>{{ Str::limit($category->name, 33) }}</td>
+                                                <td>{{ Str::limit($category->image) }}</td>
 
-            <td>{{ $category->created_at->format('d M Y') }}</td>
-            <td>
-                <div class="d-flex justify-content-center">
-                    <a href='{{ route('categories.edit', $category->id) }}' class="btn btn-sm btn-info btn-icon">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
+                                                <!-- Description limited 33 characters -->
+                                                <td>{{ Str::limit($category->description ?? '', 33) }}</td>
 
-                    <form action="{{ route('categories.destroy', $category->id) }}" method="POST" class="ml-2">
-                        @method('DELETE')
-                        @csrf
-                        <button class="btn btn-sm btn-danger btn-icon confirm-delete">
-                            <i class="fas fa-times"></i> Delete
-                        </button>
-                    </form>
-                </div>
-            </td>
-        </tr>
-    @endforeach
-</table>
+                                                <td>{{ $category->created_at->format('d M Y') }}</td>
+                                                <td>
+                                                    <div class="d-flex justify-content-center">
+                                                        <a href='{{ route('categories.edit', $category->id) }}'
+                                                            class="btn btn-sm btn-info btn-icon">
+                                                            <i class="fas fa-edit"></i> Edit
+                                                        </a>
+
+                                                        <form action="{{ route('categories.destroy', $category->id) }}"
+                                                            method="POST" class="ml-2">
+                                                            @method('DELETE')
+                                                            @csrf
+                                                            <button class="btn btn-sm btn-danger btn-icon confirm-delete">
+                                                                <i class="fas fa-times"></i> Delete
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </table>
                                 </div>
                                 <div class="float-right">
                                     {{ $categories->withQueryString()->links() }}

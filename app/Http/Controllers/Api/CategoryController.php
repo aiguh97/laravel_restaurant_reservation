@@ -20,15 +20,26 @@ class CategoryController extends Controller
     }
 
     // GET /api/categories
-    public function index()
-    {
-        $categories = Category::all();
+   public function index()
+{
+    $categories = Category::all()->map(function ($category) {
+        if ($category->image) {
+            // Gunakan titik (.) untuk menggabungkan string
+            // ltrim digunakan untuk menghapus slash di awal nama image jika ada
+            $path = 'categories/' . ltrim($category->image, '/');
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $categories
-        ]);
-    }
+            $category->image = Storage::disk('minio')->url($path);
+        }
+        return $category;
+    });
+
+    return response()->json([
+        'status' => 'success',
+        'data' => $categories
+    ]);
+}
+
+
 
     // GET /api/categories/{id}
     public function show(Category $category)
