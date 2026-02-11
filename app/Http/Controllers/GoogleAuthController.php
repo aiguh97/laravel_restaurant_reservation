@@ -14,36 +14,34 @@ class GoogleAuthController extends Controller
         return Socialite::driver('google')->redirect();
     }
 
-    public function handleGoogleCallback()
-    {
-        try {
-            $googleUser = Socialite::driver('google')->user();
+  public function handleGoogleCallback()
+{
+    try {
+        $googleUser = Socialite::driver('google')->user();
+        $user = User::where('email', $googleUser->getEmail())->first();
 
-            // Cari user berdasarkan email
-            $user = User::where('email', $googleUser->getEmail())->first();
-
-            // SYARAT 1: JIKA USER TIDAK ADA, JANGAN REGISTER (TOLAK)
-            if (!$user) {
-                return redirect()->route('login')->withErrors([
-                    'email' => 'Akun Google Anda belum terdaftar di sistem kami.'
-                ]);
-            }
-
-            // SYARAT 2: CEK 2FA (Sesuai database kamu: two_factor_enabled)
-            if ($user->two_factor_enabled) {
-                // Simpan ID user di session sementara untuk verifikasi 2FA
-                session(['login.id' => $user->id]);
-
-                // Arahkan ke halaman verifikasi 2FA Fortify atau view custom kamu
-                return redirect()->route('two-factor.login');
-            }
-
-            // JIKA TIDAK ADA 2FA, LANGSUNG LOGIN
-            Auth::login($user);
-            return redirect()->intended('/home');
-
-        } catch (\Exception $e) {
-            return redirect()->route('login')->withErrors(['email' => 'Gagal login via Google.']);
+        // 1. CEK APAKAH USER ADA (HANYA LOGIN, TIDAK REGISTER)
+        if (!$user) {
+            return redirect()->route('login')->withErrors([
+                'email' => 'Akun tidak terdaftar. Silakan hubungi admin.'
+            ]);
         }
+
+        // 2. CEK APAKAH 2FA AKTIF (Berdasarkan model kamu: two_factor_enabled)
+        if ($user->two_factor_enabled) {
+            // Jangan login dulu! Simpan data sementara di session
+            session(['2fa:user_id' => $user->id]);
+
+            // Redirect ke halaman input kode OTP (bukan langsung masuk dashboard)
+            return redirect()->route('two-factor.login');
+        }
+
+        // 3. JIKA TIDAK ADA 2FA, LANGSUNG LOGIN
+        Auth::login($user);
+        return redirect()->intended('/home');
+
+    } catch (\Exception $e) {
+        return redirect()->route('login')->withErrors(['email' => 'Terjadi kesalahan login Google.']);
     }
+}
 }
