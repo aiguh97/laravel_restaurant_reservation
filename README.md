@@ -99,3 +99,25 @@ AWS_USE_PATH_STYLE_ENDPOINT=true
 <p align="center">
   <img src="screenshoots/product.png" width="700"/>
 </p>
+
+<h3>Enable Auth</h3>
+<p align="center">
+  <img src="screenshoots/enable_auth.png" width="700"/>
+</p>
+
+<h3>Setup Auth</h3>
+<p align="center">
+  <img src="screenshoots/setup_auth.png" width="700"/>
+</p>
+
+<h3>2 FA Login</h3>
+<p align="center">
+  <img src="screenshoots/2fa_login.png" width="700"/>
+</p>
+
+<h3>Verifikasi 2 FA Via Email</h3>
+<p align="center">
+  <img src="screenshoots/verifikasi_2fa_via_email.png" width="700"/>
+</p>
+
+

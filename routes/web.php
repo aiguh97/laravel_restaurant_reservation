@@ -21,6 +21,15 @@ Route::get('/minio-test', function () {
     return 'OK';
 });
 
+Route::post('/logout', function (Request $request) {
+    Auth::logout();
+
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('login');
+})->name('logout');
+
 
 
 Route::get('/test-upload', function () {
