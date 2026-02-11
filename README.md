@@ -82,6 +82,7 @@ AWS_USE_PATH_STYLE_ENDPOINT=true
 
 
 ## 📸 Screenshots Interface
+```
 
 | Dashboard Admin | Menu Kasir (POS) |
 | :---: | :---: |
