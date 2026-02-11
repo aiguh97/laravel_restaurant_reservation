@@ -20,35 +20,28 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          # 1. Pastikan folder tujuan ada, jika tidak buat foldernya
-          if [ ! -d "/var/www/html/my-app" ]; then
-            sudo mkdir -p /var/www/html/my-app
-            sudo chown -R $USER:$USER /var/www/html/my-app
-            cd /var/www/html/my-app
-            git clone https://github.com/${{ github.repository }}.git .
+          # Masuk ke folder, jika gagal (belum ada), clone dulu
+          if [ ! -d "/var/www/html/my-app/.git" ]; then
+            cd /var/www/html
+            git clone https://github.com/${{ github.repository }}.git my-app
           fi
 
           cd /var/www/html/my-app
 
-          # 2. Tarik kode terbaru
+          # Reset kode ke versi terbaru dari GitHub
           git fetch origin main
           git reset --hard origin/main
 
-          # 3. Update file .env dari GitHub Secrets
-          # Pastikan ENV_CONTENTS berisi DB_HOST=127.0.0.1
+          # Pasang konfigurasi .env
           echo "${{ secrets.ENV_CONTENTS }}" > .env
 
-          # 4. Instalasi & Migrasi (Menggunakan path absolut jika perlu)
-          # Jika 'composer' tidak ditemukan, ganti dengan /usr/local/bin/composer
-          composer install --no-interaction --prefer-dist --optimize-autoloader
+          # Jalankan Composer dengan Full Path
+          /usr/local/bin/composer install --no-interaction --prefer-dist --optimize-autoloader
 
-          # 5. Jalankan migrasi dan bersihkan cache
-          php artisan migrate --force
-          php artisan config:clear
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
+          # Jalankan Artisan dengan Full Path
+          /usr/bin/php artisan migrate --force
+          /usr/bin/php artisan config:cache
+          /usr/bin/php artisan route:cache
 
-          # 6. Atur ulang permission agar web server bisa membaca file
-          sudo chown -R www-data:www-data storage bootstrap/cache
-          sudo chmod -R 775 storage bootstrap/cache
+          # Atur Permission (Opsional jika user SSH adalah root)
+          # sudo chown -R www-data:www-data storage bootstrap/cache
