@@ -1,66 +1,99 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🍴 RestoGuh - Integrated POS & Restaurant Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**RestoGuh** adalah platform manajemen restoran berbasis Laravel 11 yang mencakup sistem Point of Sales (POS), manajemen inventaris, reservasi meja, hingga pelaporan keuangan. Sistem ini dilengkapi dengan keamanan ganda (2FA) dan integrasi penyimpanan cloud MinIO.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Fitur Utama
+* **Authentication & Security**: Dukungan JWT/Sanctum untuk API, Google OAuth, dan Two-Factor Authentication (2FA) via Email.
+* **POS (Point of Sales)**: Manajemen Produk, Kategori, dan Meja.
+* **Order Workflow**: Pemisahan alur pesanan untuk Kasir, Pelanggan, dan Dapur (*Kitchen*).
+* **Reservation System**: Pengelolaan reservasi meja secara real-time.
+* **Reporting**: Summary penjualan harian, produk terlaris, dan laporan tutup kasir.
+* **Storage Integration**: Mendukung penyimpanan file S3-Compatible (MinIO).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🛠️ Dokumentasi API (Endpoints)
 
-## Learning Laravel
+Base URL: `http://teguhdev.space/api`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Authentication
+| Method | Endpoint | Deskripsi | Status |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/login` | Login user & mendapatkan token | Public |
+| `POST` | `/register` | Registrasi user baru | Public |
+| `POST` | `/auth/google` | Login melalui Google Account | Public |
+| `POST` | `/2fa/verify` | Verifikasi kode OTP 2FA | Public |
+| `POST` | `/logout` | Menghapus session/token | Auth |
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### 2. Product & Category
+| Method | Endpoint | Deskripsi |
+| :--- | :--- | :--- |
+| `GET` | `/products` | List semua produk |
+| `POST` | `/products` | Tambah produk baru |
+| `PATCH` | `/products/{id}` | Update data produk |
+| `GET` | `/categories` | List semua kategori |
+| `GET` | `/list-categories` | List kategori singkat untuk dropdown |
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 3. Orders & Kitchen
+| Method | Endpoint | Deskripsi |
+| :--- | :--- | :--- |
+| `POST` | `/orders` | Membuat pesanan baru |
+| `GET` | `/my-orders` | Riwayat pesanan user saat ini |
+| `GET` | `/admin/orders` | Semua data pesanan (Admin) |
+| `GET` | `/kitchen/orders` | Monitoring pesanan untuk tim Dapur |
+| `PATCH` | `/orders/{id}/status` | Update status pesanan (Pending/Ready/Done) |
 
-## Laravel Sponsors
+### 4. Tables & Reservations
+| Method | Endpoint | Deskripsi |
+| :--- | :--- | :--- |
+| `GET` | `/tables` | List status ketersediaan meja |
+| `POST` | `/reservations` | Membuat reservasi meja baru |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🖥️ Dokumentasi Web (Admin Dashboard)
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Dashboard Admin dapat diakses melalui browser untuk manajemen data master.
 
-## Contributing
+### Alur Kerja Utama:
+1.  **Login**: User masuk melalui `/login`. Jika 2FA aktif, user diarahkan ke `/2fa-challenge`.
+2.  **Dashboard**: Ringkasan performa restoran di `/home`.
+3.  **User Management**: Pengelolaan hak akses karyawan melalui `/user`.
+4.  **Product Management**: Pengelolaan menu dan stok melalui `/product`.
+5.  **Settings**: Pengaturan profil dan aktivasi 2FA melalui `/settings/2fa`.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## ☁️ Integrasi MinIO (S3 Storage)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Konfigurasi S3 di file `.env`:
 
-## Security Vulnerabilities
+```env
+FILESYSTEM_DISK=s3
+AWS_ACCESS_KEY_ID=ST0ZLWJKZILF0RF0SALD
+AWS_SECRET_ACCESS_KEY=ix7cY+E+THMFlYad5VfgG6x+nx9gH4xGjvYEAoEA
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=restoguh
+AWS_ENDPOINT=http://minio.teguhdev.space:9000
+AWS_URL=http://minio.teguhdev.space:9000/restoguh
+AWS_USE_PATH_STYLE_ENDPOINT=true
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## License
+## 📸 Screenshots Interface
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| Dashboard Admin | Menu Kasir (POS) |
+| :---: | :---: |
+| ![Dashboard](https://via.placeholder.com/400x250?text=Dashboard+Admin) | ![POS](https://via.placeholder.com/400x250?text=Point+of+Sales) |
+| *Ringkasan statistik penjualan harian* | *Antarmuka pemesanan menu cepat* |
+
+| Manajemen Produk | Mobile App / API Client |
+| :---: | :---: |
+| ![Products](https://via.placeholder.com/400x250?text=Product+Management) | ![Mobile](https://via.placeholder.com/400x250?text=Mobile+API+Integration) |
+| *Kelola stok, harga, dan kategori* | *Integrasi seamless dengan aplikasi mobile* |
+
+| Verifikasi 2FA | Laporan Penjualan |
+| :---: | :---: |
+| ![2FA](https://via.placeholder.com/400x250?text=Two+Factor+Auth) | ![Report](https://via.placeholder.com/400x250?text=Sales+Report) |
+| *Keamanan ganda untuk setiap akun* | *Analisis data transaksi mendalam* |
