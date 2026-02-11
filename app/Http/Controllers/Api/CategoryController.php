@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CategoryController extends Controller
 {
-      // Base URL untuk storage public
+    // Base URL untuk storage public
     private function fullImageUrl(?string $image): string
     {
         if (!$image) {
@@ -20,24 +20,24 @@ class CategoryController extends Controller
     }
 
     // GET /api/categories
-   public function index()
-{
-    $categories = Category::all()->map(function ($category) {
-        if ($category->image) {
-            // Gunakan titik (.) untuk menggabungkan string
-            // ltrim digunakan untuk menghapus slash di awal nama image jika ada
-            $path = 'categories/' . ltrim($category->image, '/');
+    public function index()
+    {
+        $categories = Category::all()->map(function ($category) {
+            if ($category->image) {
+                // Gunakan titik (.) untuk menggabungkan string
+                // ltrim digunakan untuk menghapus slash di awal nama image jika ada
+                $path = 'categories/' . ltrim($category->image, '/');
 
-            $category->image = Storage::disk('minio')->url($path);
-        }
-        return $category;
-    });
+                $category->image = Storage::disk('minio')->url($path);
+            }
+            return $category;
+        });
 
-    return response()->json([
-        'status' => 'success',
-        'data' => $categories
-    ]);
-}
+        return response()->json([
+            'status' => 'success',
+            'data' => $categories
+        ]);
+    }
 
 
 
@@ -67,9 +67,18 @@ class CategoryController extends Controller
         }
 
         $filename = null;
+        // if ($request->hasFile('image')) {
+        //     $filename = time() . '.' . $request->image->extension();
+        //     $request->image->storeAs('public/categories', $filename);
+        // }
         if ($request->hasFile('image')) {
             $filename = time() . '.' . $request->image->extension();
-            $request->image->storeAs('public/categories', $filename);
+
+            Storage::disk('minio')->putFileAs(
+                'categories',
+                $request->file('image'),
+                $filename
+            );
         }
 
         $category = Category::create([
@@ -86,54 +95,72 @@ class CategoryController extends Controller
 
     // PUT /api/categories/{id}
     // update API
-public function update(Request $request, Category $category)
-{
-    $validator = Validator::make($request->all(), [
-        'name' => 'required|string|max:255',
-        'description' => 'nullable|string',
-        'image' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
-    ]);
+    public function update(Request $request, Category $category)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,svg|max:2048',
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json([
-            'status' => 'error',
-            'errors' => $validator->errors()
-        ], 422);
-    }
-
-    // Hanya update jika field ada
-    if ($request->filled('name')) {
-        $category->name = $request->name;
-    }
-
-    if ($request->filled('description')) {
-        $category->description = $request->description;
-    }
-
-    if ($request->hasFile('image')) {
-        if ($category->image) {
-            Storage::delete('public/categories/' . $category->image);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 'error',
+                'errors' => $validator->errors()
+            ], 422);
         }
-        $filename = time() . '.' . $request->image->extension();
-        $request->image->storeAs('public/categories', $filename);
-        $category->image = $filename;
+
+        // Hanya update jika field ada
+        if ($request->filled('name')) {
+            $category->name = $request->name;
+        }
+
+        if ($request->filled('description')) {
+            $category->description = $request->description;
+        }
+
+        // if ($request->hasFile('image')) {
+        //     if ($category->image) {
+        //         Storage::delete('public/categories/' . $category->image);
+        //     }
+        //     $filename = time() . '.' . $request->image->extension();
+        //     $request->image->storeAs('public/categories', $filename);
+        //     $category->image = $filename;
+        // }
+
+        if ($request->hasFile('image')) {
+            if ($category->image) {
+                Storage::disk('minio')->delete('categories/' . $category->image);
+            }
+
+            $filename = time() . '.' . $request->image->extension();
+
+            Storage::disk('minio')->putFileAs(
+                'categories',
+                $request->file('image'),
+                $filename
+            );
+
+            $category->image = $filename;
+        }
+        $category->save();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $category
+        ]);
     }
-
-    $category->save();
-
-    return response()->json([
-        'status' => 'success',
-        'data' => $category
-    ]);
-}
 
 
     // DELETE /api/categories/{id}
     public function destroy(Category $category)
     {
         // Hapus file jika ada
+        // if ($category->image) {
+        //     Storage::delete('public/categories/' . $category->image);
+        // }
         if ($category->image) {
-            Storage::delete('public/categories/' . $category->image);
+            Storage::disk('minio')->delete('categories/' . $category->image);
         }
 
         $category->delete();

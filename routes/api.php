@@ -42,7 +42,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/2fa/enable', [ApiTwoFactorController::class, 'enable']);
     Route::post('/2fa/disable', [ApiTwoFactorController::class, 'disable']);
     Route::post('/2fa/send-email', [ApiTwoFactorController::class, 'sendEmail']);
+
+    Route::post('/orders', [OrderController::class, 'store']);
+    Route::get('/orders', [OrderController::class, 'index']);
+
+    Route::get('/admin/orders', [OrderController::class, 'allOrders']);
 });
+
+Route::get('/kitchen/orders', [OrderController::class, 'kitchenOrders']);
+Route::patch('/orders/{id}/status', [OrderController::class, 'updateStatus']);
+
 
 // api resource product
 Route::apiResource('products', \App\Http\Controllers\Api\ProductController::class)->middleware('auth:sanctum');

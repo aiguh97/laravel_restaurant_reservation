@@ -15,13 +15,21 @@ class Order extends Model
         'total_price',
         'total_item',
         'kasir_id',
-        'payment_method'
+        'payment_method',
+        'status',
     ];
 
     public function kasir()
     {
         return $this->belongsTo(User::class, 'kasir_id', 'id');
     }
+
+    public function tableReservation()
+{
+    // Order memiliki satu reservasi meja
+    return $this->hasOne(TableReservation::class, 'order_id');
+}
+
     public function orderItems() {
     return $this->hasMany(OrderItem::class);
 }

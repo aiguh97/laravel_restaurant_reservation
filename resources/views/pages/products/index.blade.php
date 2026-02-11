@@ -70,7 +70,7 @@
                                                 <td>
                                                     {{ $product->price }}
                                                 </td>
-                                                <td>
+                                                {{-- <td>
                                                     @if ($product->image)
                                                         <img src="{{ asset('storage/products/' . $product->image) }}"
                                                             alt="{{ $product->image }}" width="100px"
@@ -79,6 +79,15 @@
                                                         <span class="badge badge-danger">No Image</span>
                                                     @endif
 
+                                                </td> --}}
+                                                <td>
+                                                    @if ($product->image)
+                                                        <img src="{{ Storage::disk('minio')->url('products/' . $product->image) }}"
+                                                            alt="{{ $product->name }}"
+                                                            style="width:50px; height:50px; object-fit:contain; border-radius:4px;">
+                                                    @else
+                                                        <span class="text-muted">No image</span>
+                                                    @endif
                                                 </td>
                                                 <td>{{ $product->created_at }}</td>
                                                 <td>

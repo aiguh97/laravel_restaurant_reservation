@@ -1,0 +1,42 @@
+name: Deploy Laravel to VPS
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # PENTING: Hubungkan dengan Environment yang Anda buat di GitHub
+    environment: DOT_ENV
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Deploy to VPS via SSH
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd /var/www/html/my-app
+          git pull origin main
+
+          # Mengupdate file .env dari GitHub Secrets
+          # Pastikan Anda sudah membuat secret bernama 'ENV_CONTENTS' di GitHub
+          echo "${{ secrets.ENV_CONTENTS }}" > .env
+
+          # Instalasi dan Migrasi
+          composer install --no-interaction --prefer-dist --optimize-autoloader
+
+          # Jika pertama kali deploy, jalankan key generate (opsional)
+          # php artisan key:generate
+
+          php artisan migrate --force
+
+          # Optimasi cache (WAJIB setelah ganti .env)
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache

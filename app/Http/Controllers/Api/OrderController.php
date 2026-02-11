@@ -8,112 +8,171 @@ use Illuminate\Support\Facades\DB; // Import DB untuk transaction
 
 class OrderController extends Controller
 {
-    public function store(Request $request)
-    {
-        // 1. Validasi Input
-        $request->validate([
-            'transaction_time' => 'required',
-            'kasir_id' => 'required|exists:users,id',
-            'total_price' => 'required|numeric',
-            'total_item' => 'required|numeric',
-            'order_items' => 'required|array',
-            'order_items.*.product_id' => 'required|exists:products,id',
-            'order_items.*.quantity' => 'required|numeric',
-            'order_items.*.total_price' => 'required|numeric',
-        ]);
+public function index(Request $request)
+{
+    $orders = \App\Models\Order::with([
+            'orderItems.product',
+            'tableReservation.table' // Mengambil reservasi dan detail meja (table_no)
+        ])
+        ->where('kasir_id', $request->user()->id)
+        ->latest()
+        ->get();
 
-        try {
-            // 2. Gunakan Transaction agar data konsisten (jika satu gagal, semua batal)
-            $order = DB::transaction(function () use ($request) {
+    // Transformasi data agar table_number muncul di level atas (opsional, agar Flutter lebih mudah baca)
+    $orders->transform(function ($order) {
+        $order->table_number = $order->tableReservation->table->id ?? 'Take Away';
+        return $order;
+    });
 
-                // Create Order utama
-                $order = \App\Models\Order::create([
-                    'transaction_time' => $request->transaction_time,
-                    'kasir_id' => $request->kasir_id,
-                    'total_price' => $request->total_price,
-                    'total_item' => $request->total_item,
-                    'payment_method' => $request->payment_method,
+    return response()->json([
+        'success' => true,
+        'data' => $orders
+    ]);
+}
+
+   public function store(Request $request)
+{
+    $request->validate([
+        'transaction_time' => 'required|date',
+        'kasir_id' => 'required|exists:users,id',
+        'total_price' => 'required|numeric',
+        'total_item' => 'required|numeric',
+        'payment_method' => 'required|string',
+        'order_items' => 'required|array',
+        'order_items.*.product_id' => 'required|exists:products,id',
+        'order_items.*.quantity' => 'required|numeric|min:1',
+        'order_items.*.total_price' => 'required|numeric',
+    ]);
+
+    try {
+        $order = DB::transaction(function () use ($request) {
+
+            $order = \App\Models\Order::create([
+                'transaction_time' => $request->transaction_time,
+                'kasir_id' => $request->kasir_id,
+                'total_price' => $request->total_price,
+                'total_item' => $request->total_item,
+                'payment_method' => $request->payment_method,
+                'status' => 'pending', // ✅ FIX
+            ]);
+
+            foreach ($request->order_items as $item) {
+                \App\Models\OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'total_price' => $item['total_price'],
                 ]);
-
-                // Create Order Items
-                foreach ($request->order_items as $item) {
-                    \App\Models\OrderItem::create([
-                        'order_id' => $order->id, // Mengambil ID dari order yang baru dibuat
-                        'product_id' => $item['product_id'],
-                        'quantity' => $item['quantity'],
-                        'total_price' => $item['total_price'],
-                    ]);
-                }
-
-                return $order;
-            });
-
-            // 3. Response dengan mengembalikan id
-            return response()->json([
-                'success' => true,
-                'message' => 'Order Created Successfully',
-                'order_id' => $order->id, // Mengembalikan ID pesanan
-                'total_price' => $order->total_price // Opsional: mengembalikan info tambahan
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal membuat order: ' . $e->getMessage()
-            ], 500);
-        }
-    }
-
-
-    public function allOrders()
-    {
-        try {
-            // Mengambil semua order dengan relasi item dan produk di dalamnya
-            $orders = \App\Models\Order::with(['orderItems.product', 'kasir'])
-                ->orderBy('created_at', 'desc')
-                ->get();
-
-            if ($orders->isEmpty()) {
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Belum ada data transaksi',
-                    'data' => []
-                ], 200);
             }
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Semua riwayat transaksi berhasil diambil',
-                'data' => $orders
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal mengambil data: ' . $e->getMessage()
-            ], 500);
-        }
+            return $order;
+        });
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Order created',
+            'data' => [
+                'order_id' => $order->id,
+                'status' => $order->status,
+                'total_price' => $order->total_price,
+            ]
+        ], 201);
+
+    } catch (\Throwable $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to create order',
+            'error' => $e->getMessage(),
+        ], 500);
+    }
+}
+
+// Di Kitchen Controller Laravel
+public function kitchenOrders(Request $request)
+{
+    $orders = \App\Models\Order::with(['orderItems.product'])
+        // Tambahkan 'done' di sini agar ditarik semua dari database
+        ->whereIn('status', ['pending', 'processing', 'done'])
+        ->when(
+            $request->status,
+            fn ($q) => $q->where('status', $request->status)
+        )
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $orders
+    ]);
+}
+public function updateStatus(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|in:pending,processing,done'
+    ]);
+
+    $order = \App\Models\Order::findOrFail($id);
+
+    // optional: cegah backward status
+    $flow = ['pending' => 1, 'processing' => 2, 'done' => 3];
+    if ($flow[$request->status] < $flow[$order->status]) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Invalid status flow'
+        ], 422);
     }
 
-    public function index(Request $request)
-    {
-        try {
-            // Mengambil ID user yang sedang login via Token Sanctum
-            $userId = $request->user()->id;
+    $order->update([
+        'status' => $request->status
+    ]);
 
-            $orders = \App\Models\Order::with(['orderItems.product'])
-                ->where('kasir_id', $userId)
-                ->orderBy('created_at', 'desc')
-                ->get();
+    return response()->json([
+        'success' => true,
+        'message' => 'Order status updated',
+        'data' => $order
+    ]);
+}
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Riwayat pesanan berhasil diambil',
-                'data' => $orders
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
-            ], 500);
-        }
-    }
+
+    // public function allOrders()
+    // {
+    //     try {
+    //         // Mengambil semua order dengan relasi item dan produk di dalamnya
+    //         $orders = \App\Models\Order::with(['orderItems.product', 'kasir'])
+    //             ->orderBy('created_at', 'desc')
+    //             ->get();
+
+    //         if ($orders->isEmpty()) {
+    //             return response()->json([
+    //                 'success' => true,
+    //                 'message' => 'Belum ada data transaksi',
+    //                 'data' => []
+    //             ], 200);
+    //         }
+
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Semua riwayat transaksi berhasil diambil',
+    //             'data' => $orders
+    //         ], 200);
+    //     } catch (\Exception $e) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Gagal mengambil data: ' . $e->getMessage()
+    //         ], 500);
+    //     }
+    // }
+public function allOrders()
+{
+    $orders = \App\Models\Order::with(['orderItems.product', 'kasir'])
+        ->latest()
+        ->get();
+
+    return response()->json([
+        'success' => true,
+        'data' => $orders
+    ]);
+}
+
+
 }
