@@ -84,16 +84,14 @@ AWS_USE_PATH_STYLE_ENDPOINT=true
 ## 📸 Screenshots Interface
 ```
 
-| Dashboard Admin 
+Minio
 <!-- | :---: | :---: | -->
-| !![Dashboard](screenshoots/dashboard.png) 
+[Minio](screenshoots/minio.png) 
 
-| Manajemen Produk | Mobile App / API Client |
-| :---: | :---: |
-| ![Products](https://via.placeholder.com/400x250?text=Product+Management) | ![Mobile](https://via.placeholder.com/400x250?text=Mobile+API+Integration) |
-| *Kelola stok, harga, dan kategori* | *Integrasi seamless dengan aplikasi mobile* |
+Dashboard Admin 
+<!-- | :---: | :---: | -->
+[Dashboard](screenshoots/dashboard.png) 
 
-| Verifikasi 2FA | Laporan Penjualan |
-| :---: | :---: |
-| ![2FA](https://via.placeholder.com/400x250?text=Two+Factor+Auth) | ![Report](https://via.placeholder.com/400x250?text=Sales+Report) |
-| *Keamanan ganda untuk setiap akun* | *Analisis data transaksi mendalam* |
+Dashboard Admin 
+<!-- | :---: | :---: | -->
+[Dashboard](screenshoots/product.png) 
