@@ -20,28 +20,38 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         script: |
-          # Masuk ke folder, jika gagal (belum ada), clone dulu
+          # 1. Pastikan folder induk tersedia dan milik user saat ini
+          sudo mkdir -p /var/www/html
+          sudo chown -R $USER:$USER /var/www/html
+
+          # 2. Jika folder .git tidak ada, hapus sisa folder (jika ada folder kosong) dan clone ulang
           if [ ! -d "/var/www/html/my-app/.git" ]; then
+            echo "Repository not found. Cleaning and cloning..."
+            rm -rf /var/www/html/my-app
             cd /var/www/html
-            git clone https://github.com/${{ github.repository }}.git my-app
+            git clone https://github.com/aiguh97/laravel_restaurant_reservation.git my-app
           fi
 
+          # 3. Masuk ke folder aplikasi
           cd /var/www/html/my-app
 
-          # Reset kode ke versi terbaru dari GitHub
+          # 4. Ambil kode terbaru dan paksa timpa perubahan lokal
           git fetch origin main
           git reset --hard origin/main
 
-          # Pasang konfigurasi .env
+          # 5. Pasang konfigurasi .env dari GitHub Secret
           echo "${{ secrets.ENV_CONTENTS }}" > .env
 
-          # Jalankan Composer dengan Full Path
-          /usr/local/bin/composer install --no-interaction --prefer-dist --optimize-autoloader
+          # 6. Jalankan Composer (Gunakan full path)
+          export COMPOSER_ALLOW_SUPERUSER=1
+          /usr/local/bin/composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
-          # Jalankan Artisan dengan Full Path
+          # 7. Jalankan Artisan (Gunakan full path agar tidak command not found)
           /usr/bin/php artisan migrate --force
           /usr/bin/php artisan config:cache
           /usr/bin/php artisan route:cache
+          /usr/bin/php artisan view:cache
 
-          # Atur Permission (Opsional jika user SSH adalah root)
-          # sudo chown -R www-data:www-data storage bootstrap/cache
+          # 8. Opsional: Beri izin akses ke storage agar tidak error Permission Denied
+          sudo chown -R www-data:www-data storage bootstrap/cache
+          sudo chmod -R 775 storage bootstrap/cache
