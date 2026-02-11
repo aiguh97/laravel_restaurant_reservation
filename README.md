@@ -14,9 +14,11 @@
 
 ---
 
-## 🛠️ Dokumentasi API (Endpoints)
+## 🌍 Live Deployment
 
-Base URL: `http://teguhdev.space/api`
+- 🌐 Web App: http://teguhdev.space
+- 🔗 API Base URL: http://teguhdev.space/api
+- ☁️ MinIO Storage: http://minio.teguhdev.space:9000
 
 ### 1. Authentication
 | Method | Endpoint | Deskripsi | Status |
@@ -79,19 +81,21 @@ AWS_BUCKET=restoguh
 AWS_ENDPOINT=http://minio.teguhdev.space:9000
 AWS_URL=http://minio.teguhdev.space:9000/restoguh
 AWS_USE_PATH_STYLE_ENDPOINT=true
-
-
-## 📸 Screenshots Interface
 ```
 
-Minio
-<!-- | :---: | :---: | -->
-[Minio](screenshoots/minio.png) 
+## 📸 Screenshots Interface
 
-Dashboard Admin 
-<!-- | :---: | :---: | -->
-[Dashboard](screenshoots/dashboard.png) 
+<h3>🗂 MinIO</h3>
+<p align="center">
+  <img src="screenshoots/minio.png" width="700"/>
+</p>
 
-Dashboard Admin 
-<!-- | :---: | :---: | -->
-[Dashboard](screenshoots/product.png) 
+<h3>🏠 Dashboard Admin</h3>
+<p align="center">
+  <img src="screenshoots/dashboard.png" width="700"/>
+</p>
+
+<h3>🛒 Product Management</h3>
+<p align="center">
+  <img src="screenshoots/product.png" width="700"/>
+</p>
