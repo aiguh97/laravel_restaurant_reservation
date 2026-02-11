@@ -5,12 +5,86 @@
 ---
 
 ## 🚀 Fitur Utama
-* **Authentication & Security**: Dukungan JWT/Sanctum untuk API, Google OAuth, dan Two-Factor Authentication (2FA) via Email.
-* **POS (Point of Sales)**: Manajemen Produk, Kategori, dan Meja.
-* **Order Workflow**: Pemisahan alur pesanan untuk Kasir, Pelanggan, dan Dapur (*Kitchen*).
-* **Reservation System**: Pengelolaan reservasi meja secara real-time.
-* **Reporting**: Summary penjualan harian, produk terlaris, dan laporan tutup kasir.
-* **Storage Integration**: Mendukung penyimpanan file S3-Compatible (MinIO).
+
+### 🔐 Authentication & Security
+- Login & Register dengan Laravel Sanctum / JWT
+- Login dengan Google OAuth
+- Two Factor Authentication (2FA) via Email (OTP)
+- Session Management & Secure Logout
+- Role-Based Access Control (Admin, Kasir, Kitchen)
+- CSRF Protection & Form Validation
+
+---
+
+### 🛒 POS (Point of Sales)
+- Transaksi cepat untuk kasir
+- Manajemen Produk & Kategori
+- Manajemen Meja (Table Status: Available / Reserved / Occupied)
+- Perhitungan otomatis total harga
+- Status Order: Pending → Ready → Done
+- Riwayat transaksi
+
+---
+
+### 🍽 Order & Kitchen Workflow
+- Pemisahan akses:
+  - Kasir: Input & kelola pesanan
+  - Kitchen: Monitoring pesanan masuk
+  - Admin: Kontrol penuh semua order
+- Real-time order monitoring
+- Update status langsung dari dapur
+- Filter order berdasarkan status
+
+---
+
+### 📅 Reservation System
+- Booking meja online
+- Validasi ketersediaan meja
+- Manajemen waktu reservasi
+- Tracking status reservasi
+
+---
+
+### 📊 Reporting & Analytics
+- Summary penjualan harian
+- Produk terlaris
+- Total revenue
+- Laporan transaksi per periode
+- Tutup kasir (closing shift report)
+
+---
+
+### 👥 User Management
+- CRUD User
+- Assign role & permission
+- Aktivasi / Nonaktifkan akun
+- Monitoring aktivitas login
+
+---
+
+### ☁️ Cloud Storage Integration
+- Integrasi MinIO (S3 Compatible)
+- Upload & penyimpanan file produk
+- Testing koneksi storage
+- Environment-based configuration
+
+---
+
+### 📧 Email Integration (Resend SMTP)
+- Pengiriman OTP 2FA via Email
+- Konfigurasi SMTP Resend
+- Notifikasi sistem berbasis email
+
+---
+
+### 🌍 Deployment & Production Ready
+- Deployed di VPS (Linux)
+- Nginx + PHP 8.x
+- Domain custom
+- Timezone Asia/Jakarta
+- Environment Configuration (.env)
+- Production Mode Ready
+
 
 ---
 
@@ -81,6 +155,22 @@ AWS_BUCKET=restoguh
 AWS_ENDPOINT=http://minio.teguhdev.space:9000
 AWS_URL=http://minio.teguhdev.space:9000/restoguh
 AWS_USE_PATH_STYLE_ENDPOINT=true
+```
+
+## ☁️ Integrasi Resend
+
+Konfigurasi Resend di file `.env`:
+
+```env
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.resend.com
+MAIL_PORT=465
+MAIL_USERNAME=resend
+MAIL_PASSWORD=
+MAIL_ENCRYPTION=ssl
+MAIL_FROM_ADDRESS="onboarding@resend.dev"
+MAIL_FROM_NAME="${APP_NAME}"
+APP_TIMEZONE=Asia/Jakarta
 ```
 
 ## 📸 Screenshots Interface
