@@ -84,10 +84,9 @@ AWS_USE_PATH_STYLE_ENDPOINT=true
 ## 📸 Screenshots Interface
 ```
 
-| Dashboard Admin | Menu Kasir (POS) |
-| :---: | :---: |
-| ![Dashboard](https://via.placeholder.com/400x250?text=Dashboard+Admin) | ![POS](https://via.placeholder.com/400x250?text=Point+of+Sales) |
-| *Ringkasan statistik penjualan harian* | *Antarmuka pemesanan menu cepat* |
+| Dashboard Admin 
+<!-- | :---: | :---: | -->
+| !![Dashboard](screenshoots/dashboard.png) 
 
 | Manajemen Produk | Mobile App / API Client |
 | :---: | :---: |
