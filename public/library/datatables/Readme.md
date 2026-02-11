@@ -1,59 +1,99 @@
-# DataTables plug-in for jQuery
+# 🍴 RestoGuh - Integrated POS & Restaurant Management System
 
-DataTables is a table enhancing plug-in for the [jQuery](//jquery.com) Javascript library, adding sorting, paging and filtering abilities to plain HTML tables with minimal effort. The stated goal of DataTables is:
+**RestoGuh** adalah platform manajemen restoran berbasis Laravel 11 yang mencakup sistem Point of Sales (POS), manajemen inventaris, reservasi meja, hingga pelaporan keuangan. Sistem ini dilengkapi dengan keamanan ganda (2FA) dan integrasi penyimpanan cloud MinIO.
 
-> To enhance the accessibility of data in HTML tables.
+---
 
-To meet this goal, DataTables is developed with two distinct groups of users in mind:
+## 🚀 Fitur Utama
+* **Authentication & Security**: Dukungan JWT/Sanctum untuk API, Google OAuth, dan Two-Factor Authentication (2FA) via Email.
+* **POS (Point of Sales)**: Manajemen Produk, Kategori, dan Meja.
+* **Order Workflow**: Pemisahan alur pesanan untuk Kasir, Pelanggan, dan Dapur (*Kitchen*).
+* **Reservation System**: Pengelolaan reservasi meja secara real-time.
+* **Reporting**: Summary penjualan harian, produk terlaris, dan laporan tutup kasir.
+* **Storage Integration**: Mendukung penyimpanan file S3-Compatible (MinIO).
 
-* You the developers using DataTables. For developers DataTables provides a wide array of options for how data should be obtained, displayed and acted upon, along with an extensive API for accessing and manipulating the table.
+---
 
-* End users. For those using the interface DataTables presents, actions to get the most from the information contained in tables, such as sorting and filtering, along with paging and scrolling of the data in table, are easy to use, intuitive and fast.
+## 🛠️ Dokumentasi API (Endpoints)
+
+Base URL: `http://teguhdev.space/api`
+
+### 1. Authentication
+| Method | Endpoint | Deskripsi | Status |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/login` | Login user & mendapatkan token | Public |
+| `POST` | `/register` | Registrasi user baru | Public |
+| `POST` | `/auth/google` | Login melalui Google Account | Public |
+| `POST` | `/2fa/verify` | Verifikasi kode OTP 2FA | Public |
+| `POST` | `/logout` | Menghapus session/token | Auth |
+
+### 2. Product & Category
+| Method | Endpoint | Deskripsi |
+| :--- | :--- | :--- |
+| `GET` | `/products` | List semua produk |
+| `POST` | `/products` | Tambah produk baru |
+| `PATCH` | `/products/{id}` | Update data produk |
+| `GET` | `/categories` | List semua kategori |
+| `GET` | `/list-categories` | List kategori singkat untuk dropdown |
+
+### 3. Orders & Kitchen
+| Method | Endpoint | Deskripsi |
+| :--- | :--- | :--- |
+| `POST` | `/orders` | Membuat pesanan baru |
+| `GET` | `/my-orders` | Riwayat pesanan user saat ini |
+| `GET` | `/admin/orders` | Semua data pesanan (Admin) |
+| `GET` | `/kitchen/orders` | Monitoring pesanan untuk tim Dapur |
+| `PATCH` | `/orders/{id}/status` | Update status pesanan (Pending/Ready/Done) |
+
+### 4. Tables & Reservations
+| Method | Endpoint | Deskripsi |
+| :--- | :--- | :--- |
+| `GET` | `/tables` | List status ketersediaan meja |
+| `POST` | `/reservations` | Membuat reservasi meja baru |
+
+---
+
+## 🖥️ Dokumentasi Web (Admin Dashboard)
+
+Dashboard Admin dapat diakses melalui browser untuk manajemen data master.
+
+### Alur Kerja Utama:
+1.  **Login**: User masuk melalui `/login`. Jika 2FA aktif, user diarahkan ke `/2fa-challenge`.
+2.  **Dashboard**: Ringkasan performa restoran di `/home`.
+3.  **User Management**: Pengelolaan hak akses karyawan melalui `/user`.
+4.  **Product Management**: Pengelolaan menu dan stok melalui `/product`.
+5.  **Settings**: Pengaturan profil dan aktivasi 2FA melalui `/settings/2fa`.
+
+---
+
+## ☁️ Integrasi MinIO (S3 Storage)
+
+Konfigurasi S3 di file `.env`:
+
+```env
+FILESYSTEM_DISK=s3
+AWS_ACCESS_KEY_ID=ST0ZLWJKZILF0RF0SALD
+AWS_SECRET_ACCESS_KEY=ix7cY+E+THMFlYad5VfgG6x+nx9gH4xGjvYEAoEA
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=restoguh
+AWS_ENDPOINT=http://minio.teguhdev.space:9000
+AWS_URL=http://minio.teguhdev.space:9000/restoguh
+AWS_USE_PATH_STYLE_ENDPOINT=true
 
 
-## Installing DataTables
+## 📸 Screenshots Interface
 
-To use DataTables, the primary way to obtain the software is to use the [DataTables downloader](//datatables.net/download). You can also include the individual files from the [DataTables CDN](//cdn.datatables.net). See the [documentation](//datatables.net/manual/installation) for full details.
+| Dashboard Admin | Menu Kasir (POS) |
+| :---: | :---: |
+| ![Dashboard](https://via.placeholder.com/400x250?text=Dashboard+Admin) | ![POS](https://via.placeholder.com/400x250?text=Point+of+Sales) |
+| *Ringkasan statistik penjualan harian* | *Antarmuka pemesanan menu cepat* |
 
-### NPM and Bower
+| Manajemen Produk | Mobile App / API Client |
+| :---: | :---: |
+| ![Products](https://via.placeholder.com/400x250?text=Product+Management) | ![Mobile](https://via.placeholder.com/400x250?text=Mobile+API+Integration) |
+| *Kelola stok, harga, dan kategori* | *Integrasi seamless dengan aplikasi mobile* |
 
-If you prefer to use a package manager such as NPM or Bower, distribution repositories are available with software built from this repository under the name `datatables.net`. Styling packages for Bootstrap, Foundation and other styling libraries are also available by adding a suffix to the package name.
-
-Please see the DataTables [NPM](//datatables.net/download/npm) and [Bower](//datatables.net/download/bower) installation pages for further information. The [DataTables installation manual](//datatables.net/manual/installation) also has details on how to use package managers with DataTables.
-
-
-## Usage
-
-In its simplest case, DataTables can be initialised with a single line of Javascript:
-
-```js
-$('table').dataTable();
-```
-
-where the jQuery selector is used to obtain a reference to the table you want to enhance with DataTables. Optional configuration parameters can be passed in to DataTables to have it perform certain actions by using a configuration object as the parameter passed in to the DataTables constructor. For example:
-
-```js
-$('table').dataTable( {
-  paginate: false,
-  scrollY: 300
-} );
-```
-
-will disable paging and enable scrolling.
-
-A full list of the options available for DataTables are available in the [documentation](//datatables.net).
-
-
-## Documentation
-
-Full documentation of the DataTables options, API and plug-in interface are available on the [DataTables web-site](//datatables.net). The site also contains information on the wide variety of plug-ins that are available for DataTables, which can be used to enhance and customise your table even further.
-
-
-## Support
-
-Support for DataTables is available through the [DataTables forums](//datatables.net/forums) and [commercial support options](//datatables.net/support) are available.
-
-
-## License
-
-DataTables is release under the [MIT license](//datatables.net/license). You are free to use, modify and distribute this software, as long as the copyright header is left intact (specifically the comment block which starts with `/*!`.
+| Verifikasi 2FA | Laporan Penjualan |
+| :---: | :---: |
+| ![2FA](https://via.placeholder.com/400x250?text=Two+Factor+Auth) | ![Report](https://via.placeholder.com/400x250?text=Sales+Report) |
+| *Keamanan ganda untuk setiap akun* | *Analisis data transaksi mendalam* |
