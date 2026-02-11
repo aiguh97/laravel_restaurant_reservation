@@ -1,6 +1,6 @@
-# 🍴 RestoGuh - Integrated POS & Restaurant Management System
+# 🍴 Gusresto - Integrated POS & Restaurant Management System
 
-**RestoGuh** adalah platform manajemen restoran berbasis Laravel 11 yang mencakup sistem Point of Sales (POS), manajemen inventaris, reservasi meja, hingga pelaporan keuangan. Sistem ini dilengkapi dengan keamanan ganda (2FA) dan integrasi penyimpanan cloud MinIO.
+**Gusresto** adalah platform manajemen restoran berbasis Laravel 10 yang mencakup sistem Point of Sales (POS), manajemen inventaris, reservasi meja, hingga pelaporan keuangan. Sistem ini dilengkapi dengan keamanan ganda (2FA) dan integrasi penyimpanan cloud MinIO.
 
 ---
 
@@ -147,14 +147,24 @@ Dashboard Admin dapat diakses melalui browser untuk manajemen data master.
 Konfigurasi S3 di file `.env`:
 
 ```env
-FILESYSTEM_DISK=s3
+FILESYSTEM_DISK=minio
 AWS_ACCESS_KEY_ID=ST0ZLWJKZILF0RF0SALD
 AWS_SECRET_ACCESS_KEY=ix7cY+E+THMFlYad5VfgG6x+nx9gH4xGjvYEAoEA
 AWS_DEFAULT_REGION=us-east-1
-AWS_BUCKET=restoguh
+AWS_BUCKET=Gusresto
 AWS_ENDPOINT=http://minio.teguhdev.space:9000
-AWS_URL=http://minio.teguhdev.space:9000/restoguh
+AWS_URL=http://minio.teguhdev.space:9000/Gusresto
 AWS_USE_PATH_STYLE_ENDPOINT=true
+```
+
+## ☁️ Integrasi Google OAUT 
+
+Konfigurasi Google Client Id & Secret di file `.env`:
+
+```env
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URL=http://localhost:8000/auth/google/callback
 ```
 
 ## ☁️ Integrasi Resend
@@ -180,6 +190,10 @@ APP_TIMEZONE=Asia/Jakarta
   <img src="screenshoots/minio.png" width="700"/>
 </p>
 
+<h3>🏠 Landing Page</h3>
+<p align="center">
+  <img src="screenshoots/ss1.png" width="700"/>
+</p>
 <h3>🏠 Dashboard Admin</h3>
 <p align="center">
   <img src="screenshoots/dashboard.png" width="700"/>

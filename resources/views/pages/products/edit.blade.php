@@ -37,7 +37,7 @@
                             name="image"
                             label="Product Image"
                             id="productImage"
-                            :oldImage="$product->image ? asset('storage/products/' . $product->image) : null"
+                           :oldImage="$product->image ? Storage::disk('minio')->url('products/' . $product->image) : null"
                         />
 
                         <!-- Name -->

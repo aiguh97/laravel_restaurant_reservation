@@ -1,11 +1,14 @@
 <div class="main-sidebar sidebar-style-2">
     <aside id="sidebar-wrapper">
-        <div class="sidebar-brand">
-            <a href="{{ url('/') }}">Restoguh</a>
+        <div class="sidebar-brand" style="height: auto; padding: 20px 0; line-height: normal;">
+            <a href="{{ auth()->check() ? url('/home') : url('/') }}"
+               style="display: block; width: 100%; text-transform: none; letter-spacing: normal;">
+               {{-- Gunakan props untuk menyesuaikan ukuran khusus sidebar --}}
+               <x-brand-logo size="text-xl" />
+            </a>
         </div>
-        <div class="sidebar-brand sidebar-brand-sm">
-            <a href="{{ url('/') }}">PB</a>
-        </div>
+
+
 
         <ul class="sidebar-menu">
             <li class="menu-header">Dashboard</li>
@@ -26,18 +29,14 @@
                 </a>
             </li>
 
-            {{-- Products with dropdown --}}
-            <li class="nav-item dropdown {{ Request::is('product*') ? 'active' : '' }}">
-                <a href="#" class="nav-link has-dropdown">
+            {{-- Products --}}
+            <li class="{{ Request::is('product*') ? 'active' : '' }}">
+                <a href="{{ route('product.index') }}" class="nav-link">
                     <i class="fas fa-box"></i>
                     <span>Products</span>
                 </a>
-                <ul class="dropdown-menu">
-                    <li class="{{ Request::is('product') ? 'active' : '' }}">
-                        <a href="{{ route('product.index') }}" class="nav-link">All Products</a>
-                    </li>
-                </ul>
             </li>
+
 
             {{-- Orders --}}
             <li class="{{ Request::is('order*') ? 'active' : '' }}">
@@ -51,7 +50,7 @@
             {{-- Products with dropdown --}}
             <li class="{{ Request::is('settings*') ? 'active' : '' }}">
                 <a href="{{ route('settings.index') }}" class="nav-link">
-                   <i class="fa-solid fa-gear"></i>
+                    <i class="fa-solid fa-gear"></i>
                     <span>Settings</span>
                 </a>
             </li>

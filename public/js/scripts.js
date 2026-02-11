@@ -614,3 +614,30 @@ $(function() {
     });
   }
 });
+
+// Ganti bagian ini di script.js
+const initAOS = () => {
+    const options = {
+        threshold: 0.1, // 10% elemen terlihat langsung picu animasi
+        rootMargin: "0px 0px -50px 0px" // Trigger sedikit sebelum elemen muncul di layar
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('aos-animate');
+                // Optional: stop observing once animated
+                // observer.unobserve(entry.target);
+            }
+        });
+    }, options);
+
+    // Ambil semua elemen dengan atribut data-aos
+    const elements = document.querySelectorAll('[data-aos]');
+    elements.forEach(el => observer.observe(el));
+};
+
+// Pastikan dijalankan setelah DOM & Gambar siap
+window.addEventListener('load', () => {
+    initAOS();
+});

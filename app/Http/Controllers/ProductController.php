@@ -134,14 +134,24 @@ public function update(Request $request, $id)
     }
 }
 
-
-    public function destroy($id)
-    {
+public function destroy($id)
+{
+    try {
         $product = Product::findOrFail($id);
-        if ($product->image && Storage::exists('public/products/' . $product->image)) {
-            Storage::delete('public/products/' . $product->image);
-        }
         $product->delete();
-        return redirect()->route('product.index')->with('success', 'Product successfully deleted');
+
+        return redirect()->route('product.index')
+            ->with('success', 'Produk berhasil dihapus');
+
+    } catch (\Illuminate\Database\QueryException $e) {
+        // Cek jika error disebabkan oleh Foreign Key (Error code 1451)
+        if ($e->getCode() == "23000") {
+            return back()->withErrors([
+                'error' => 'Gagal menghapus! Produk ini sudah memiliki riwayat transaksi (Order).'
+            ]);
+        }
+
+        return back()->withErrors(['error' => 'Terjadi kesalahan sistem saat menghapus data.']);
     }
+}
 }

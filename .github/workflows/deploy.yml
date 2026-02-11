@@ -39,8 +39,8 @@ jobs:
           git fetch origin main
           git reset --hard origin/main
 
-          # 5. Pasang konfigurasi .env dari GitHub Secret
-          echo "${{ secrets.ENV_CONTENTS }}" > .env
+          # # 5. Pasang konfigurasi .env dari GitHub Secret
+          # echo "${{ secrets.ENV_CONTENTS }}" > .env
 
           # 6. Jalankan Composer (Gunakan full path)
           export COMPOSER_ALLOW_SUPERUSER=1

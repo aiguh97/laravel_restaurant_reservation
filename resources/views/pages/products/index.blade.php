@@ -21,6 +21,14 @@
                     <div class="breadcrumb-item">All Products</div>
                 </div>
             </div>
+            @if ($errors->has('error'))
+                <div class="alert alert-danger alert-dismissible show fade">
+                    <div class="alert-body">
+                        <button class="close" data-dismiss="alert"><span>&times;</span></button>
+                        {{ $errors->first('error') }}
+                    </div>
+                </div>
+            @endif
             <div class="section-body">
                 <div class="row">
                     <div class="col-12">

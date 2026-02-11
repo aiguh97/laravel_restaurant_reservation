@@ -10,11 +10,19 @@ use App\Http\Controllers\{
     TwoFactorLoginController,
     ProductController,
     OrderController,
-    CategoryController
+    CategoryController,
+    GoogleAuthController
 };
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
 // 1. Halaman Depan (Root)
+Route::get('/', function () {
+   return View('welcome');
+});
+Route::get('/login', function () {
+    return view('pages.auth.login'); // Pastikan menggunakan huruf kecil 'view'
+})->name('login');
 
 Route::get('/minio-test', function () {
     Storage::disk('s3')->put('test.txt', 'hello from laravel');
@@ -64,6 +72,8 @@ Route::post('/login', function (Request $request) {
     return redirect()->route('home');
 })->name('login');
 
+Route::get('auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
 // 3. Challenge 2FA (Setelah Login Berhasil tapi sebelum masuk Dashboard)
 Route::get('/2fa-challenge', [TwoFactorLoginController::class, 'show'])->name('2fa.challenge');
 Route::post('/2fa-challenge', [TwoFactorLoginController::class, 'verify'])->name('2fa.challenge.verify');

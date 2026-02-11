@@ -54,6 +54,12 @@
                             Login
                         </button>
                     </div>
+                    <div class="mt-4 text-center">
+                        <p class="text-muted">- Atau Login Dengan -</p>
+                        <a href="{{ route('google.login') }}" class="btn btn-danger btn-block">
+                            <i class="fab fa-google"></i> Google
+                        </a>
+                    </div>
             </form>
 
 

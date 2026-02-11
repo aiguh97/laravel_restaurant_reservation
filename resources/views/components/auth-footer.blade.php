@@ -1,3 +1,3 @@
   <div class="simple-footer">
-      Copyright &copy; Code with Bahri 2024
+      Copyright &copy; Teguh Muhammad Harits 2026
   </div>
