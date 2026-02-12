@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use PragmaRX\Google2FAQRCode\Google2FA;
 use Illuminate\Support\Facades\Cache;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\RateLimiter;
 
 class ApiTwoFactorController extends Controller
 {
@@ -105,45 +107,48 @@ class ApiTwoFactorController extends Controller
         ]);
     }
 
-    public function sendEmail(Request $request)
-    {
-        // Karena API, kita ambil userId dari request, bukan session browser
-        $userId = $request->user_id;
-        $user = User::find($userId);
+  public function sendEmail(Request $request)
+{
+    // 1. Validasi input
+    $request->validate([
+        'user_id' => 'required|exists:users,id'
+    ]);
 
-        if (!$user) {
-            return response()->json(['status' => false, 'message' => 'User tidak ditemukan'], 404);
-        }
+    $userId = $request->user_id;
+    $user = User::find($userId);
 
-        $cooldownKey = "2fa_email_cooldown_{$userId}";
-        $cooldownUntil = Cache::get($cooldownKey);
+    // 2. Definisi Key unik untuk Redis
+    $key = 'send-otp-email:' . $userId;
 
-        if ($cooldownUntil && now()->timestamp < $cooldownUntil) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Tunggu ' . ($cooldownUntil - now()->timestamp) . ' detik'
-            ], 429);
-        }
-
-        $otp = random_int(100000, 999999);
-
-        // Simpan di Cache (jangan di Session karena Flutter itu stateless)
-        // Gunakan key yang unik per user
-        Cache::put("2fa_otp_{$userId}", $otp, now()->addMinutes(10));
-
-        try {
-            Mail::to($user->email)->send(new TwoFactorOtpMail($otp));
-
-            $expires = now()->addSeconds(30)->timestamp;
-            Cache::put($cooldownKey, $expires, 30);
-
-            return response()->json([
-                'status' => true,
-                'message' => 'Kode OTP telah dikirim ke email ' . $user->email,
-                'cooldown_until' => $expires
-            ]);
-        } catch (\Exception $e) {
-            return response()->json(['status' => false, 'message' => 'Gagal mengirim email'], 500);
-        }
+    // 3. Cek Limit (Hanya boleh 1 kali per 30 detik)
+    if (RateLimiter::tooManyAttempts($key, 1)) {
+        $seconds = RateLimiter::availableIn($key);
+        return response()->json([
+            'status' => false,
+            'message' => "Tunggu $seconds detik untuk mengirim ulang kode OTP."
+        ], 429);
     }
+
+    // 4. Generate OTP & Simpan di Cache (Redis)
+    $otp = random_int(100000, 999999);
+    Cache::put("2fa_otp_{$userId}", $otp, now()->addMinutes(10));
+
+    try {
+        // 5. Kirim Email
+        Mail::to($user->email)->send(new \App\Mail\TwoFactorOtpMail($otp));
+
+        // 6. Catat percobaan (Hit) dengan decay time 30 detik
+        RateLimiter::hit($key, 30);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Kode OTP baru telah dikirim ke ' . $user->email,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => false,
+            'message' => 'Gagal mengirim email: ' . $e->getMessage()
+        ], 500);
+    }
+}
 }

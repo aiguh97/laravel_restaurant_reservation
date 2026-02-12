@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 // Tambahkan baris import di bawah ini:
 use App\Models\User;
-use PragmaRX\Google2FA\Google2FA;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Mail;
 
 
 class AuthController extends Controller
@@ -19,6 +20,56 @@ class AuthController extends Controller
     {
         //
     }
+
+    public function verify2FA(Request $request)
+{
+    $request->validate([
+        'user_id' => 'required',
+        'code' => 'required',
+        'two_factor_token' => 'required' // Pastikan Flutter mengirim ini
+    ]);
+
+    $user = User::find($request->user_id);
+
+    if (!$user) {
+        return response()->json(['message' => 'User tidak ditemukan'], 404);
+    }
+
+    // 1. Cek OTP dari Email (Cache)
+    $emailOtp = Cache::get("2fa_otp_{$user->id}");
+    $isEmailValid = ($emailOtp && $emailOtp == $request->code);
+
+    // 2. Cek OTP dari Google Authenticator (jika email tidak valid)
+    $isGoogleValid = false;
+    if (!$isEmailValid && $user->two_factor_secret) {
+        $google2fa = new \PragmaRX\Google2FA\Google2FA();
+        $secret = decrypt($user->two_factor_secret);
+        $isGoogleValid = $google2fa->verifyKey($secret, $request->code);
+    }
+
+    // 3. Validasi Akhir
+    if ($isEmailValid || $isGoogleValid) {
+        // Hapus OTP email jika sukses
+        Cache::forget("2fa_otp_{$user->id}");
+
+        // BUAT TOKEN SANCTUM (Ini pengganti issueToken yang error tadi)
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Authenticated',
+            'token' => $token,
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'roles' => $user->roles, // Sesuaikan field roles Anda
+                'two_factor_enabled' => true,
+            ],
+        ], 200);
+    }
+
+    return response()->json(['message' => 'Kode OTP tidak valid atau kadaluarsa'], 401);
+}
 
     public function register(Request $request)
     {
@@ -121,53 +172,6 @@ class AuthController extends Controller
         ], 200);
     }
 
-
-   public function verify2FA(Request $request)
-{
-    $request->validate([
-        'user_id' => 'required|exists:users,id',
-        'code' => 'required|digits:6',
-        'two_factor_token' => 'required|string'
-    ]);
-
-    $user = User::find($request->user_id);
-
-    // validasi temporary login token
-    if (
-        !$user->two_factor_login_token ||
-        !hash_equals($user->two_factor_login_token, hash('sha256', $request->two_factor_token)) ||
-        now()->gt($user->two_factor_login_expires_at)
-    ) {
-        return response()->json([
-            'message' => 'Sesi login 2FA tidak valid atau kedaluwarsa'
-        ], 401);
-    }
-
-    $google2fa = new \PragmaRX\Google2FA\Google2FA();
-
-    $secret = $user->two_factor_secret ? decrypt($user->two_factor_secret) : null;
-    $isOtpValid = $secret && $google2fa->verifyKey($secret, $request->code, 4);
-
-    if (!$isOtpValid) {
-        return response()->json([
-            'message' => 'Kode OTP salah'
-        ], 401);
-    }
-
-    // hapus challenge
-    $user->update([
-        'two_factor_login_token' => null,
-        'two_factor_login_expires_at' => null,
-    ]);
-
-    $token = $user->createToken('auth_token')->plainTextToken;
-
-    return response()->json([
-        'message' => 'Login success',
-        'token' => $token,
-        'user' => $user
-    ]);
-}
 
 
 
