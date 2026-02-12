@@ -1,7 +1,11 @@
-# 🍴 Gusresto - Integrated POS & Restaurant Management System
+<div align="center">
+  <img src="screenshoots/logo.png" width="180"/>
+</div>
+# 🍴 Gusresto Backend
 
 **Gusresto** adalah platform manajemen restoran berbasis Laravel 10 yang mencakup sistem Point of Sales (POS), manajemen inventaris, reservasi meja, hingga pelaporan keuangan. Sistem ini dilengkapi dengan keamanan ganda (2FA) dan integrasi penyimpanan cloud MinIO.
 
+ <img src="screenshoots/ss1.png" width="100%"/>
 ---
 
 ## 🚀 Fitur Utama
@@ -54,13 +58,6 @@
 
 ---
 
-### 👥 User Management
-- CRUD User
-- Assign role & permission
-- Aktivasi / Nonaktifkan akun
-- Monitoring aktivitas login
-
----
 
 ### ☁️ Cloud Storage Integration
 - Integrasi MinIO (S3 Compatible)
@@ -172,15 +169,10 @@ GOOGLE_REDIRECT_URL=http://localhost:8000/auth/google/callback
 Konfigurasi Resend di file `.env`:
 
 ```env
-MAIL_MAILER=smtp
-MAIL_HOST=smtp.resend.com
-MAIL_PORT=465
-MAIL_USERNAME=resend
-MAIL_PASSWORD=
-MAIL_ENCRYPTION=ssl
-MAIL_FROM_ADDRESS="onboarding@resend.dev"
-MAIL_FROM_NAME="${APP_NAME}"
-APP_TIMEZONE=Asia/Jakarta
+MAIL_MAILER=resend
+RESEND_API_KEY=YOUR_RESEND_API_KEY
+MAIL_FROM_ADDRESS=noreply@teguhdev.com
+MAIL_FROM_NAME="TeguhDev"
 ```
 
 ## 📸 Screenshots Interface
@@ -190,10 +182,7 @@ APP_TIMEZONE=Asia/Jakarta
   <img src="screenshoots/minio.png" width="700"/>
 </p>
 
-<h3>🏠 Landing Page</h3>
-<p align="center">
-  <img src="screenshoots/ss1.png" width="700"/>
-</p>
+
 <h3>🏠 Dashboard Admin</h3>
 <p align="center">
   <img src="screenshoots/dashboard.png" width="700"/>
@@ -212,6 +201,11 @@ APP_TIMEZONE=Asia/Jakarta
 <h3>Setup Auth</h3>
 <p align="center">
   <img src="screenshoots/setup_auth.png" width="700"/>
+</p>
+
+<h3>Disable 2 FA</h3>
+<p align="center">
+  <img src="screenshoots/setting.png" width="700"/>
 </p>
 
 <h3>2 FA Login</h3>
