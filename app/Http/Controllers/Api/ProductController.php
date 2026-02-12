@@ -14,12 +14,12 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $cacheKey = 'api:products:all';
-
-        $data = Cache::remember($cacheKey, now()->addMinutes(10), function () {
-
+  public function index()
+{
+    $data = Cache::tags(['products'])->remember(
+        'products.all',
+        now()->addMinutes(10),
+        function () {
             return Product::with('category')
                 ->latest()
                 ->get()
@@ -40,14 +40,15 @@ class ProductController extends Controller
                         'updated_at' => $product->updated_at,
                     ];
                 });
-        });
+        }
+    );
 
-        return response()->json([
-            'success' => true,
-            'message' => 'List Data Product',
-            'data' => $data
-        ], 200);
-    }
+    return response()->json([
+        'success' => true,
+        'message' => 'List Data Product',
+        'data' => $data
+    ]);
+}
 
     /**
      * Store a newly created resource in storage.
@@ -92,36 +93,44 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        $product = Product::with('category')->find($id);
+   public function show(string $id)
+{
+    $data = Cache::tags(['products'])->remember(
+        "products.$id",
+        now()->addMinutes(10),
+        function () use ($id) {
 
-        if (!$product) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Product not found'
-            ], 404);
+            $product = Product::with('category')->find($id);
+
+            if (!$product) return null;
+
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'price' => $product->price,
+                'stock' => $product->stock,
+                'image' => $product->image
+                    ? Storage::disk('minio')->url('products/' . $product->image)
+                    : null,
+                'category' => $product->category?->name,
+            ];
         }
+    );
 
-        $data = [
-            'id' => $product->id,
-            'name' => $product->name,
-            'description' => $product->description,
-            'price' => $product->price,
-            'stock' => $product->stock,
-            'image' => $product->image ? asset('storage/products/' . $product->image) : null,
-            'is_best_seller' => $product->is_best_seller,
-            'category_id' => $product->category_id,
-            'category' => $product->category ? $product->category->name : null,
-            'created_at' => $product->created_at,
-            'updated_at' => $product->updated_at,
-        ];
-
+    if (!$data) {
         return response()->json([
-            'success' => true,
-            'data' => $data
-        ], 200);
+            'success' => false,
+            'message' => 'Product not found'
+        ], 404);
     }
+
+    return response()->json([
+        'success' => true,
+        'data' => $data
+    ]);
+}
+
 
     /**
      * Update the specified resource in storage.
@@ -175,6 +184,7 @@ class ProductController extends Controller
         // invalidate cache
         Cache::forget('api:products:all');
         Cache::forget('api:products:' . $id);
+        Cache::tags(['products'])->flush();
 
         return response()->json([
             'success' => true,
@@ -207,6 +217,7 @@ class ProductController extends Controller
             $product->delete();
 
             Cache::forget('api:products:all');
+            Cache::tags(['products'])->flush();
 
             return response()->json([
                 'success' => true,
