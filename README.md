@@ -1,12 +1,12 @@
 <div align="center">
   <img src="screenshoots/logo.png" width="180"/>
 </div>
-# 🍴 Gusresto Backend
+🍴 Gusresto Backend
 
 **Gusresto** adalah platform manajemen restoran berbasis Laravel 10 yang mencakup sistem Point of Sales (POS), manajemen inventaris, reservasi meja, hingga pelaporan keuangan. Sistem ini dilengkapi dengan keamanan ganda (2FA) dan integrasi penyimpanan cloud MinIO.
 
- <img src="screenshoots/ss1.png" width="100%"/>
----
+<img src="screenshoots/ss1.png" width="100%"/>
+
 
 ## 🚀 Fitur Utama
 
@@ -180,6 +180,11 @@ MAIL_FROM_NAME="TeguhDev"
 <h3>🗂 MinIO</h3>
 <p align="center">
   <img src="screenshoots/minio.png" width="700"/>
+</p>
+
+<h3>🗂 Resend</h3>
+<p align="center">
+  <img src="screenshoots/resend.png" width="700"/>
 </p>
 
 
