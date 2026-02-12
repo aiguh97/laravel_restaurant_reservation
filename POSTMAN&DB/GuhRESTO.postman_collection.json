@@ -1,0 +1,1200 @@
+{
+  "info": {
+    "_postman_id": "672ec468-b0ca-4b2a-a3d2-daceb69241a0",
+    "name": "GuhRESTO",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "33036413"
+  },
+  "item": [
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "Products",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "3|Jn6J2mRz3sFGlZPmhJtqrU1mhvhlUom2rEY7N0X17ace3eca",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_time\": \"2026-02-07 14:30:00\",\n  \"kasir_id\": 1,\n  \"total_price\": 75000,\n  \"total_item\": 3,\n  \"payment_method\": \"CASH\",\n  \"order_items\": [\n    {\n      \"product_id\": 2,\n      \"quantity\": 1,\n      \"total_price\": 25000\n    },\n    {\n      \"product_id\": 3,\n      \"quantity\": 2,\n      \"total_price\": 50000\n    }\n  ]\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}/api/products",
+              "host": [
+                "{{URL_PROD}}"
+              ],
+              "path": [
+                "api",
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Products",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "3|Jn6J2mRz3sFGlZPmhJtqrU1mhvhlUom2rEY7N0X17ace3eca",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "sadd",
+                  "type": "text",
+                  "uuid": "d426927b-0a58-47db-b201-55e7eeac4ff0"
+                },
+                {
+                  "key": "description",
+                  "value": "sdaddsd",
+                  "type": "text",
+                  "uuid": "f30c3b42-13d3-461f-9f50-c56cb7e45a2a"
+                },
+                {
+                  "key": "category_id",
+                  "value": "1",
+                  "type": "text",
+                  "uuid": "36720d9f-d38e-4bcd-91cc-2d4379ee73df"
+                },
+                {
+                  "key": "price",
+                  "value": "25000",
+                  "type": "text",
+                  "uuid": "7c1271f9-487a-491f-9dce-9a6b47916eba"
+                },
+                {
+                  "key": "stock",
+                  "value": "21",
+                  "type": "text",
+                  "uuid": "2e344083-0850-482b-b91d-2441526b64cb"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "d1315166-0bce-4b63-9f03-5968b941237a",
+                  "src": "/Users/teguhmuhammadharits/BELAJAR/FIC/flutter_pos_2/assets/images/f1.jpeg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{URL_PROD}}api/products",
+              "host": [
+                "{{URL_PROD}}api"
+              ],
+              "path": [
+                "products"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Products",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "3|Jn6J2mRz3sFGlZPmhJtqrU1mhvhlUom2rEY7N0X17ace3eca",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\":\"Es kapuchino\",\n    \"stock\":322,\n    \"category\":\"skfalklfs\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}/api/products/58",
+              "host": [
+                "{{URL_PROD}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "58"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Product",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "3|Jn6J2mRz3sFGlZPmhJtqrU1mhvhlUom2rEY7N0X17ace3eca",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\":\"Es kapuchino\",\n    \"stock\":322,\n    \"category\":\"skfalklfs\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}/api/products/58",
+              "host": [
+                "{{URL_PROD}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "58"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "API_"
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Categories",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_time\": \"2026-02-07 14:30:00\",\n  \"kasir_id\": 1,\n  \"total_price\": 75000,\n  \"total_item\": 3,\n  \"payment_method\": \"CASH\",\n  \"order_items\": [\n    {\n      \"product_id\": 2,\n      \"quantity\": 1,\n      \"total_price\": 25000\n    },\n    {\n      \"product_id\": 3,\n      \"quantity\": 2,\n      \"total_price\": 50000\n    }\n  ]\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://10.168.89.102:8000/api/categories",
+              "protocol": "http",
+              "host": [
+                "10",
+                "168",
+                "89",
+                "102"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Categories",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "3|Jn6J2mRz3sFGlZPmhJtqrU1mhvhlUom2rEY7N0X17ace3eca",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Telugu",
+                  "type": "text",
+                  "uuid": "d2123341-7d07-44fe-b281-9efebe535107"
+                },
+                {
+                  "key": "description",
+                  "value": "sdsadadsdsa",
+                  "type": "text",
+                  "uuid": "dd7dd1ba-11d8-4ac2-862c-8642f73856c7"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "7436cb4b-a67e-4981-ac82-ff1aac336c3c",
+                  "src": "/Users/teguhmuhammadharits/BELAJAR/FIC/flutter_pos_2/assets/images/f3.jpeg"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/categories",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "categories"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Category Edit",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "3|Jn6J2mRz3sFGlZPmhJtqrU1mhvhlUom2rEY7N0X17ace3eca",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Telugu edited",
+                  "type": "text",
+                  "uuid": "d2123341-7d07-44fe-b281-9efebe535107"
+                },
+                {
+                  "key": "description",
+                  "value": "sdsadadsdsa",
+                  "type": "text",
+                  "uuid": "dd7dd1ba-11d8-4ac2-862c-8642f73856c7"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "7436cb4b-a67e-4981-ac82-ff1aac336c3c",
+                  "src": "/Users/teguhmuhammadharits/BELAJAR/FIC/flutter_pos_2/assets/icons/drink.svg"
+                },
+                {
+                  "key": "_method",
+                  "value": "PUT",
+                  "type": "text",
+                  "uuid": "b38fadaf-9892-4ba5-a6be-87b9f7b11f1e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8001/api/categories/5",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8001",
+              "path": [
+                "api",
+                "categories",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Category Delete",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "3|Jn6J2mRz3sFGlZPmhJtqrU1mhvhlUom2rEY7N0X17ace3eca",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "",
+                "value": "",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Telugu edited",
+                  "type": "text",
+                  "uuid": "d2123341-7d07-44fe-b281-9efebe535107"
+                },
+                {
+                  "key": "description",
+                  "value": "sdsadadsdsa",
+                  "type": "text",
+                  "uuid": "dd7dd1ba-11d8-4ac2-862c-8642f73856c7"
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "uuid": "7436cb4b-a67e-4981-ac82-ff1aac336c3c",
+                  "src": "/Users/teguhmuhammadharits/BELAJAR/FIC/flutter_pos_2/assets/icons/drink.svg"
+                },
+                {
+                  "key": "_method",
+                  "value": "PUT",
+                  "type": "text",
+                  "uuid": "b38fadaf-9892-4ba5-a6be-87b9f7b11f1e"
+                }
+              ]
+            },
+            "url": {
+              "raw": "http://localhost:8001/api/categories/5",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8001",
+              "path": [
+                "api",
+                "categories",
+                "5"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Budi\",\n  \"email\": \"budi@email.com\",\n  \"password\": \"password123\",\n  \"password_confirmation\": \"password123\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8000/api/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8000",
+              "path": [
+                "api",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\":\"aiguh97@gmail.com\",\n    \"password\":\"12345678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}/api/login",
+              "host": [
+                "{{URL_PROD}}"
+              ],
+              "path": [
+                "api",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login With Google",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"id_token\":\"eyJhbGciOiJSUzI1NiIsImtpZCI6ImMyN2JhNDBiMDk1MjlhZDRmMTY4MjJjZTgzMTY3YzFiYzM5MTAxMjIiLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIxNDg3NDE3MDU5MjQtODdvNjdpaWlvMzMyMW51NnA3NGVpdjZ0dW4wMXR2NG4uYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIxNDg3NDE3MDU5MjQtNjQzdDdlNGZwZTg1bjcxczZvZm40YWlydnQ3aHNyaTUuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMDY3NTc3NDkwODA2NjEwMzQ0MzciLCJlbWFpbCI6ImFpZ3VoOTdAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJhaSBndWgiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUNnOG9jSXNHQTFvMXNBbUd1RjNiem9oTjRydkdFTGRTcHNxVU1zUHp3cjlxWFRFZ0JGMDFzST1zOTYtYyIsImdpdmVuX25hbWUiOiJhaSIsImZhbWlseV9uYW1lIjoiZ3VoIiwiaWF0IjoxNzcwODc2ODQyLCJleHAiOjE3NzA4ODA0NDJ9.S5yxwGvs7Z1nySexgckJ6b8kKZ0-QjAg55pCwhY4EPTQ1Z5ODiOFopZkvoDSME3xKRgBbpImlnNKRU7p2qZoNSME0wnfha2JyNX1P-ikZHnXON8pcmCHTtQw0OimFGw_ZnbEe8njpy4sUOYz4ldNonU51zJOlLGb1_pxOS8f12KkcXpNme2jGB7leaND20hzsK0su5eCKpIGPXXF_ng6HvRyYmNe9mhtVwDe1gmtNQimmEta7d7B7zoSkb_BYHFj3C-0aR03lD-Kwd2ym\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}/api/auth/google",
+              "host": [
+                "{{URL_PROD}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "google"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\":\"teguhharits91@gmail.com\",\n    \"password\":\"12345678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}/api/logout",
+              "host": [
+                "{{URL_PROD}}"
+              ],
+              "path": [
+                "api",
+                "logout"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2FA",
+      "item": [
+        {
+          "name": "Setup",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\":\"aiguh97@gmail.com\",\n    \"password\":\"12345678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}/api/2fa/setup",
+              "host": [
+                "{{URL_PROD}}"
+              ],
+              "path": [
+                "api",
+                "2fa",
+                "setup"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Enable",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\":\"aiguh97@gmail.com\",\n    \"password\":\"12345678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}/api/2fa/enable",
+              "host": [
+                "{{URL_PROD}}"
+              ],
+              "path": [
+                "api",
+                "2fa",
+                "enable"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Disable",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{TOKEN}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\":\"aiguh97@gmail.com\",\n    \"password\":\"12345678\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}/api/2fa/disable",
+              "host": [
+                "{{URL_PROD}}"
+              ],
+              "path": [
+                "api",
+                "2fa",
+                "disable"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Orders",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer 36|XWMSh6EgV2UaxtydpzQhAsgCQxf5TcdsIHeSHsSO9d01a1f6",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_time\": \"2026-02-08 14:13:00\",\n  \"kasir_id\": 1,\n  \"total_price\": 75000,\n  \"total_item\": 3,\n  \"payment_method\": \"CASH\",\n  \"order_items\": [\n    {\n      \"product_id\": 58,\n      \"quantity\": 1,\n      \"total_price\": 25000\n    } \n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}/api/orders",
+              "host": [
+                "{{URL_PROD}}"
+              ],
+              "path": [
+                "api",
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Order Status",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer 36|XWMSh6EgV2UaxtydpzQhAsgCQxf5TcdsIHeSHsSO9d01a1f6",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"processing\"\n}\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}api/orders/2/status",
+              "host": [
+                "{{URL_PROD}}api"
+              ],
+              "path": [
+                "orders",
+                "2",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Kitchen",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer 36|XWMSh6EgV2UaxtydpzQhAsgCQxf5TcdsIHeSHsSO9d01a1f6",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_time\": \"2026-02-08 14:13:00\",\n  \"kasir_id\": 1,\n  \"total_price\": 75000,\n  \"total_item\": 3,\n  \"payment_method\": \"CASH\",\n  \"order_items\": [\n    {\n      \"product_id\": 58,\n      \"quantity\": 1,\n      \"total_price\": 25000\n    } \n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}/api/kitchen/orders",
+              "host": [
+                "{{URL_PROD}}"
+              ],
+              "path": [
+                "api",
+                "kitchen",
+                "orders"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Kitchen Status",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json",
+                "type": "text"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer 36|XWMSh6EgV2UaxtydpzQhAsgCQxf5TcdsIHeSHsSO9d01a1f6",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaction_time\": \"2026-02-08 14:13:00\",\n  \"kasir_id\": 1,\n  \"total_price\": 75000,\n  \"total_item\": 3,\n  \"payment_method\": \"CASH\",\n  \"order_items\": [\n    {\n      \"product_id\": 58,\n      \"quantity\": 1,\n      \"total_price\": 25000\n    } \n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{URL_PROD}}/api/kitchen/orders?status=done",
+              "host": [
+                "{{URL_PROD}}"
+              ],
+              "path": [
+                "api",
+                "kitchen",
+                "orders"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "done"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "TABLES",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "3|Jn6J2mRz3sFGlZPmhJtqrU1mhvhlUom2rEY7N0X17ace3eca",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/tables?date=2026-02-08&time=15:00",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "tables"
+          ],
+          "query": [
+            {
+              "key": "date",
+              "value": "2026-02-08"
+            },
+            {
+              "key": "time",
+              "value": "15:00"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Orders",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer 36|XWMSh6EgV2UaxtydpzQhAsgCQxf5TcdsIHeSHsSO9d01a1f6",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"transaction_time\": \"2026-02-08 14:13:00\",\n  \"kasir_id\": 1,\n  \"total_price\": 75000,\n  \"total_item\": 3,\n  \"payment_method\": \"CASH\",\n  \"order_items\": [\n    {\n      \"product_id\": 58,\n      \"quantity\": 1,\n      \"total_price\": 25000\n    } \n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "My-Orders",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer 36|XWMSh6EgV2UaxtydpzQhAsgCQxf5TcdsIHeSHsSO9d01a1f6",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"transaction_time\": \"2026-02-08 14:13:00\",\n  \"kasir_id\": 1,\n  \"total_price\": 75000,\n  \"total_item\": 3,\n  \"payment_method\": \"CASH\",\n  \"order_items\": [\n    {\n      \"product_id\": 58,\n      \"quantity\": 1,\n      \"total_price\": 25000\n    } \n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/my-orders",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8000",
+          "path": [
+            "api",
+            "my-orders"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Reservations",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "3|Jn6J2mRz3sFGlZPmhJtqrU1mhvhlUom2rEY7N0X17ace3eca",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"table_id\": 1,\n  \"order_id\": 10,\n  \"date\": \"2026-02-07\",\n  \"start_time\": \"18:00\",\n  \"end_time\": \"20:00\",\n  \"customer_name\": \"Walk In\",\n  \"status\": \"reserved\"\n}\n",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8001/api/reservations",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8001",
+          "path": [
+            "api",
+            "reservations"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

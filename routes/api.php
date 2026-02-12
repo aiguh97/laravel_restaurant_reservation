@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\GoogleAuthControllerApi;
-use App\Http\Controllers\API\ApiTwoFactorController;
+use App\Http\Controllers\Api\ApiTwoFactorController;
 
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductController;
