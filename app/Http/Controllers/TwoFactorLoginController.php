@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\TwoFactorOtpMail;
 use PragmaRX\Google2FA\Google2FA;
+use Illuminate\Support\Facades\Cache;
 
 class TwoFactorLoginController extends Controller
 {
@@ -26,26 +27,63 @@ class TwoFactorLoginController extends Controller
     public function sendEmail()
     {
         if (!session()->has('2fa:user:id')) {
-            return redirect('/login');
+            return response()->json([
+                'status' => false,
+                'message' => 'Session login tidak valid'
+            ], 401);
         }
 
-        $user = User::find(session('2fa:user:id'));
-        $otp = rand(100000, 999999);
+        $userId = session('2fa:user:id');
+        $user = User::find($userId);
 
-        // Simpan OTP email ke session
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User tidak ditemukan'
+            ], 404);
+        }
+
+        // 🔒 cooldown 30 detik
+        $cooldownKey = "2fa_email_cooldown_{$userId}";
+        $cooldownUntil = Cache::get($cooldownKey);
+
+        if ($cooldownUntil && now()->timestamp < $cooldownUntil) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Tunggu ' . ($cooldownUntil - now()->timestamp) . ' detik'
+            ], 429);
+        }
+
+        // generate OTP
+        $otp = random_int(100000, 999999);
+
+        // simpan OTP 10 menit
         session([
             '2fa:otp' => $otp,
             '2fa:otp_expires_at' => now()->addMinutes(10)
         ]);
 
         try {
+
             Mail::to($user->email)->send(new TwoFactorOtpMail($otp));
-            return back()->with('success', 'Kode OTP telah dikirim ke email Anda.');
+
+            // set cooldown 30 detik
+            $expires = now()->addSeconds(30)->timestamp;
+            Cache::put($cooldownKey, $expires, 30);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Kode OTP dikirim',
+                'cooldown_until' => $expires
+            ]);
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal mengirim email. Silakan gunakan Google Authenticator.'.$e);
+
+            return response()->json([
+                'status' => false,
+                'message' => 'Gagal mengirim email'
+            ], 500);
         }
     }
-
     public function verify(Request $request)
     {
         $request->validate(['code' => 'required|digits:6']);

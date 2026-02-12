@@ -75,6 +75,24 @@ class AuthController extends Controller
         //
     }
 
+    protected function create2FAChallenge($user)
+    {
+        $token = bin2hex(random_bytes(32));
+
+        $user->update([
+            'two_factor_login_token' => hash('sha256', $token),
+            'two_factor_login_expires_at' => now()->addMinutes(5),
+        ]);
+
+        return response()->json([
+            'message' => '2FA_REQUIRED',
+            'two_factor_token' => $token,
+            'user_id' => $user->id,
+            'email' => $user->email,
+        ], 200);
+    }
+
+
     public function login(Request $request)
     {
         $request->validate([
@@ -90,12 +108,9 @@ class AuthController extends Controller
 
         // 🔐 CEK APAKAH 2FA AKTIF
         if ($user->two_factor_enabled) {
-            return response([
-                'message' => '2FA_REQUIRED',
-                'user_id' => $user->id,
-                'email' => $user->email,
-            ], 200); // Status 200 agar Flutter tahu ini bukan error, tapi proses lanjut
+            return $this->create2FAChallenge($user);
         }
+
 
         // JIKA TIDAK AKTIF, LANGSUNG BERIKAN TOKEN
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -107,45 +122,53 @@ class AuthController extends Controller
     }
 
 
-    public function verify2FA(Request $request)
-    {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'code'    => 'required|digits:6',
-        ]);
+   public function verify2FA(Request $request)
+{
+    $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'code' => 'required|digits:6',
+        'two_factor_token' => 'required|string'
+    ]);
 
-        $user = User::find($request->user_id);
-        $google2fa = new Google2FA();
+    $user = User::find($request->user_id);
 
-        // 1. Cek OTP dari Database (Jika Anda mengirim via Email)
-        $isOtpEmailValid = session()->has('2fa:otp') &&
-            session('2fa:otp') == $request->code &&
-            now()->lt(session('2fa:otp_expires_at'));
-
-        // 2. Cek OTP dari Authenticator App
-        $secret = $user->two_factor_secret ? decrypt($user->two_factor_secret) : null;
-        $isOtpAppValid = $secret ? $google2fa->verifyKey($secret, $request->code, 4) : false;
-
-        // Validasi salah satu (Email atau App)
-        if ($isOtpEmailValid || $isOtpAppValid) {
-
-            // Hapus session OTP email jika ada
-            session()->forget(['2fa:otp', '2fa:otp_expires_at']);
-
-            // Buat Token Sanctum
-            $token = $user->createToken('auth_token')->plainTextToken;
-
-            return response()->json([
-                'user' => $user,
-                'token' => $token,
-                'message' => 'Login success'
-            ], 200);
-        }
-
+    // validasi temporary login token
+    if (
+        !$user->two_factor_login_token ||
+        !hash_equals($user->two_factor_login_token, hash('sha256', $request->two_factor_token)) ||
+        now()->gt($user->two_factor_login_expires_at)
+    ) {
         return response()->json([
-            'message' => 'Kode OTP tidak valid atau sudah kedaluwarsa.'
+            'message' => 'Sesi login 2FA tidak valid atau kedaluwarsa'
         ], 401);
     }
+
+    $google2fa = new \PragmaRX\Google2FA\Google2FA();
+
+    $secret = $user->two_factor_secret ? decrypt($user->two_factor_secret) : null;
+    $isOtpValid = $secret && $google2fa->verifyKey($secret, $request->code, 4);
+
+    if (!$isOtpValid) {
+        return response()->json([
+            'message' => 'Kode OTP salah'
+        ], 401);
+    }
+
+    // hapus challenge
+    $user->update([
+        'two_factor_login_token' => null,
+        'two_factor_login_expires_at' => null,
+    ]);
+
+    $token = $user->createToken('auth_token')->plainTextToken;
+
+    return response()->json([
+        'message' => 'Login success',
+        'token' => $token,
+        'user' => $user
+    ]);
+}
+
 
 
     //logout

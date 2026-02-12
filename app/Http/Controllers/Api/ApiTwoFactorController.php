@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use PragmaRX\Google2FAQRCode\Google2FA;
+use Illuminate\Support\Facades\Cache;
+use App\Models\User;
 
 class ApiTwoFactorController extends Controller
 {
@@ -103,10 +105,45 @@ class ApiTwoFactorController extends Controller
         ]);
     }
 
-    // Tambahan untuk alur email jika dibutuhkan
-    public function sendEmail()
+    public function sendEmail(Request $request)
     {
-        // Logika kirim OTP via email jika user memilih type 'email'
-        return response()->json(['message' => 'Fitur email OTP belum diimplementasikan.']);
+        // Karena API, kita ambil userId dari request, bukan session browser
+        $userId = $request->user_id;
+        $user = User::find($userId);
+
+        if (!$user) {
+            return response()->json(['status' => false, 'message' => 'User tidak ditemukan'], 404);
+        }
+
+        $cooldownKey = "2fa_email_cooldown_{$userId}";
+        $cooldownUntil = Cache::get($cooldownKey);
+
+        if ($cooldownUntil && now()->timestamp < $cooldownUntil) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Tunggu ' . ($cooldownUntil - now()->timestamp) . ' detik'
+            ], 429);
+        }
+
+        $otp = random_int(100000, 999999);
+
+        // Simpan di Cache (jangan di Session karena Flutter itu stateless)
+        // Gunakan key yang unik per user
+        Cache::put("2fa_otp_{$userId}", $otp, now()->addMinutes(10));
+
+        try {
+            Mail::to($user->email)->send(new TwoFactorOtpMail($otp));
+
+            $expires = now()->addSeconds(30)->timestamp;
+            Cache::put($cooldownKey, $expires, 30);
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Kode OTP telah dikirim ke email ' . $user->email,
+                'cooldown_until' => $expires
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => 'Gagal mengirim email'], 500);
+        }
     }
 }

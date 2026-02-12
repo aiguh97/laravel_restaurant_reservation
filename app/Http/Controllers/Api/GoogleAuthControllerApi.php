@@ -10,62 +10,60 @@ use Illuminate\Support\Facades\Hash;
 
 class GoogleAuthControllerApi extends Controller
 {
+    // File: App\Http\Controllers\Api\GoogleAuthControllerApi.php
+
     public function loginOrRegister(Request $request)
     {
-        $request->validate([
-            'id_token' => 'required|string',
-        ]);
+        $request->validate(['id_token' => 'required|string']);
 
         try {
-            // Verifikasi token Google
-            $googleUser = Socialite::driver('google')
-                ->stateless()
-                ->userFromToken($request->id_token);
+            $googleUser = Socialite::driver('google')->stateless()->userFromToken($request->id_token);
 
-            // Cari user berdasarkan google_id atau email
             $user = User::where('google_id', $googleUser->id)
                 ->orWhere('email', $googleUser->email)
                 ->first();
 
-            // Jika user belum ada → REGISTER
             if (!$user) {
                 $user = User::create([
                     'name' => $googleUser->name,
                     'email' => $googleUser->email,
                     'google_id' => $googleUser->id,
                     'avatar' => $googleUser->avatar,
-                    'password' => Hash::make(12345678), // dummy password
+                    'password' => Hash::make(bin2hex(random_bytes(8))), // password random lebih aman
                 ]);
             } else {
-                // Jika user ada tapi google_id kosong → update
                 if (!$user->google_id) {
-                    $user->update([
-                        'google_id' => $googleUser->id,
-                        'avatar' => $googleUser->avatar,
-                    ]);
+                    $user->update(['google_id' => $googleUser->id, 'avatar' => $googleUser->avatar]);
                 }
             }
 
-            // Generate Sanctum Token
+            // 🔐 CEK APAKAH 2FA AKTIF (Sama seperti AuthController)
+            if ($user->two_factor_enabled) {
+                // Kita panggil logika challenge yang sama
+                $token = bin2hex(random_bytes(32));
+                $user->update([
+                    'two_factor_login_token' => hash('sha256', $token),
+                    'two_factor_login_expires_at' => now()->addMinutes(5),
+                ]);
+
+                return response()->json([
+                    'message' => '2FA_REQUIRED', // Label yang sama agar Flutter mengenali
+                    'two_factor_token' => $token,
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                ], 200);
+            }
+
+            // JIKA TIDAK AKTIF, LANGSUNG TOKEN
             $token = $user->createToken('auth_token')->plainTextToken;
 
             return response()->json([
                 'message' => 'Login berhasil',
-                'user' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'roles' => $user->roles,
-                    'created_at' => $user->created_at,
-                    'updated_at' => $user->updated_at,
-                ],
+                'user' => $user,
                 'token' => $token,
             ], 200);
         } catch (\Exception $e) {
-            return response()->json([
-                'message' => 'Google authentication gagal',
-                'error' => $e->getMessage(),
-            ], 401);
+            return response()->json(['message' => 'Google authentication gagal', 'error' => $e->getMessage()], 401);
         }
     }
 }

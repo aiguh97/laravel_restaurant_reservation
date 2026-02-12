@@ -1,8 +1,4 @@
-@extends('layouts.app')
 
-@section('title', 'Two Factor Authentication')
-
-@section('main')
 @extends('layouts.app')
 
 @section('title', 'Two Factor Authentication')

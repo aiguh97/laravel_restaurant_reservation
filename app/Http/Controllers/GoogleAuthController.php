@@ -11,13 +11,15 @@ class GoogleAuthController extends Controller
 {
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+       return Socialite::driver('google')
+        ->with(['prompt' => 'select_account consent']) // 'consent' memaksa layar persetujuan muncul kembali
+        ->redirect();
     }
 
     public function handleGoogleCallback()
     {
         try {
-            $googleUser = Socialite::driver('google')->user();
+           $googleUser = Socialite::driver('google')->stateless()->user();
             $user = User::where('email', $googleUser->getEmail())->first();
 
             // 1. CEK APAKAH USER ADA (HANYA LOGIN, TIDAK REGISTER)

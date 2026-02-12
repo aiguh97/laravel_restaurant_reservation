@@ -30,6 +30,8 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('/auth/google', [GoogleAuthControllerApi::class, 'loginOrRegister']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/2fa/verify', [AuthController::class, 'verify2FA']);
+Route::post('/2fa-challenge/send-email', [ApiTwoFactorController::class, 'sendEmail'])->name('2fa.challenge.send-email');
+Route::post('/2fa/send-email', [ApiTwoFactorController::class, 'sendEmail']);
 // post logout
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
@@ -39,9 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders', [OrderController::class, 'allOrders']);
     Route::get('/orders', [OrderController::class, 'iall']);
     Route::get('/2fa/setup', [ApiTwoFactorController::class, 'setup']);
+
     Route::post('/2fa/enable', [ApiTwoFactorController::class, 'enable']);
     Route::post('/2fa/disable', [ApiTwoFactorController::class, 'disable']);
-    Route::post('/2fa/send-email', [ApiTwoFactorController::class, 'sendEmail']);
 
     Route::post('/orders', [OrderController::class, 'store']);
     Route::get('/orders', [OrderController::class, 'index']);

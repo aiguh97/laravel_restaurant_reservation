@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Storage;
 
 // 1. Halaman Depan (Root)
 Route::get('/', function () {
-   return view('welcome');
+    return view('welcome');
 });
 
 // 2. Auth & Login
@@ -57,6 +57,7 @@ Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCa
 // Logout
 Route::post('/logout', function (Request $request) {
     Auth::logout();
+    $request->session()->forget('2fa:user:id'); // Bersihkan sisa session 2FA jika ada
     $request->session()->invalidate();
     $request->session()->regenerateToken();
     return redirect()->route('login');
@@ -65,7 +66,8 @@ Route::post('/logout', function (Request $request) {
 // 3. Challenge 2FA
 Route::get('/2fa-challenge', [TwoFactorLoginController::class, 'show'])->name('2fa.challenge');
 Route::post('/2fa-challenge', [TwoFactorLoginController::class, 'verify'])->name('2fa.challenge.verify');
-Route::get('/2fa-challenge/send-email', [TwoFactorLoginController::class, 'sendEmail'])->name('2fa.challenge.send-email');
+Route::post('/2fa-challenge/send-email', [TwoFactorLoginController::class, 'sendEmail'])->name('2fa.challenge.send-email');
+// Route::get('/2fa-challenge/send-email', [TwoFactorLoginController::class, 'sendEmail'])->name('2fa.challenge.send-email');
 
 // 4. Protected Routes (Harus Login)
 Route::middleware(['auth'])->group(function () {
