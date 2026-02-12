@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+
 use App\Http\Controllers\{
     UserController,
     SettingController,
@@ -11,88 +13,154 @@ use App\Http\Controllers\{
     ProductController,
     OrderController,
     CategoryController,
+    GoogleAuthController
 };
-use App\Http\Controllers\GoogleAuthController;
-use Illuminate\Support\Facades\Storage;
 
-// 1. Halaman Depan (Root)
-Route::get('/', function () {
-    return view('welcome');
-});
+/*
+|--------------------------------------------------------------------------
+| PUBLIC ROUTES
+|--------------------------------------------------------------------------
+*/
 
-// 2. Auth & Login
-// Route GET untuk menampilkan halaman login
-Route::get('/login', function () {
-    return view('pages.auth.login');
-})->name('login');
+// Landing Page
+Route::view('/', 'welcome')->name('welcome');
 
-// Route POST untuk proses login (Ubah namanya agar tidak bentrok)
+/*
+|--------------------------------------------------------------------------
+| AUTHENTICATION
+|--------------------------------------------------------------------------
+*/
+
+// Login Page
+Route::view('/login', 'pages.auth.login')->name('login');
+
+// Process Login
 Route::post('/login', function (Request $request) {
+
     $credentials = $request->validate([
         'email' => ['required', 'email'],
         'password' => ['required'],
     ]);
 
     if (!Auth::attempt($credentials)) {
-        return back()->withErrors(['email' => 'Email atau password salah']);
+        return back()->withErrors([
+            'email' => 'Email atau password salah'
+        ]);
     }
 
     $user = Auth::user();
 
-    // Cek jika 2FA aktif
+    // Jika 2FA aktif
     if ($user->two_factor_enabled) {
         session(['2fa:user:id' => $user->id]);
-        Auth::logout(); // Logout sementara sampai verifikasi 2FA sukses
+        Auth::logout();
         return redirect()->route('2fa.challenge');
     }
 
     $request->session()->regenerate();
-    return redirect()->route('home');
-})->name('login.process'); // <--- Diubah agar tidak bentrok
 
-// Google Login
-Route::get('auth/google', [GoogleAuthController::class, 'redirectToGoogle'])->name('google.login');
-Route::get('auth/google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
+    return redirect()->route('home');
+
+})->name('login.process');
+
+
+// Google OAuth
+Route::prefix('auth')->group(function () {
+    Route::get('google', [GoogleAuthController::class, 'redirectToGoogle'])
+        ->name('google.login');
+
+    Route::get('google/callback', [GoogleAuthController::class, 'handleGoogleCallback']);
+});
+
 
 // Logout
 Route::post('/logout', function (Request $request) {
+
     Auth::logout();
-    $request->session()->forget('2fa:user:id'); // Bersihkan sisa session 2FA jika ada
+
+    $request->session()->forget('2fa:user:id');
     $request->session()->invalidate();
     $request->session()->regenerateToken();
+
     return redirect()->route('login');
+
 })->name('logout');
 
-// 3. Challenge 2FA
-Route::get('/2fa-challenge', [TwoFactorLoginController::class, 'show'])->name('2fa.challenge');
-Route::post('/2fa-challenge', [TwoFactorLoginController::class, 'verify'])->name('2fa.challenge.verify');
-Route::post('/2fa-challenge/send-email', [TwoFactorLoginController::class, 'sendEmail'])->name('2fa.challenge.send-email');
-// Route::get('/2fa-challenge/send-email', [TwoFactorLoginController::class, 'sendEmail'])->name('2fa.challenge.send-email');
 
-// 4. Protected Routes (Harus Login)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/home', function () {
-        return view('pages.dashboard');
-    })->name('home');
+/*
+|--------------------------------------------------------------------------
+| 2FA CHALLENGE (NOT AUTH)
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('2fa')->name('2fa.')->group(function () {
+
+    Route::get('/challenge', [TwoFactorLoginController::class, 'show'])
+        ->name('challenge');
+
+    Route::post('/challenge', [TwoFactorLoginController::class, 'verify'])
+        ->name('challenge.verify');
+
+    Route::post('/challenge/send-email', [TwoFactorLoginController::class, 'sendEmail'])
+        ->name('challenge.send-email');
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| PROTECTED ROUTES
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->group(function () {
+
+    Route::view('/home', 'pages.dashboard')->name('home');
 
     Route::resource('user', UserController::class);
-    Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::resource('product', ProductController::class);
     Route::resource('order', OrderController::class);
     Route::resource('categories', CategoryController::class);
 
-    // Setup 2FA
-    Route::get('/settings/2fa', [TwoFactorController::class, 'setup'])->name('2fa.setup');
-    Route::post('/settings/2fa', [TwoFactorController::class, 'enable'])->name('2fa.enable');
-    Route::post('/settings/2fa/disable', [TwoFactorController::class, 'disable'])->name('2fa.disable');
+    // Settings
+    Route::get('/settings', [SettingController::class, 'index'])
+        ->name('settings.index');
+
+    /*
+    |--------------------------------------------------------------------------
+    | 2FA SETTINGS
+    |--------------------------------------------------------------------------
+    */
+
+    Route::prefix('settings/2fa')->name('2fa.')->group(function () {
+
+        Route::get('/', [TwoFactorController::class, 'setup'])
+            ->name('setup');
+
+        Route::post('/', [TwoFactorController::class, 'enable'])
+            ->name('enable');
+
+        Route::post('/disable', [TwoFactorController::class, 'disable'])
+            ->name('disable');
+
+    });
+
 });
 
-// 5. Test MinIO / S3 (Hapus jika sudah produksi)
+
+/*
+|--------------------------------------------------------------------------
+| DEBUG / TEST ONLY (REMOVE IN PRODUCTION)
+|--------------------------------------------------------------------------
+*/
+
 Route::get('/minio-test', function () {
+
     try {
         Storage::disk('s3')->put('test-file.txt', 'Halo MinIO!');
         return "Upload Berhasil!";
     } catch (\Exception $e) {
         return "Gagal: " . $e->getMessage();
     }
-});
+
+})->name('minio.test');
