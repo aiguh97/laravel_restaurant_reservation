@@ -7,7 +7,7 @@ use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\GoogleAuthController;
+use App\Http\Controllers\Api\GoogleAuthControllerApi;
 use App\Http\Controllers\Api\OrderController;
 
 /*
@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // post login
 Route::post('login', [AuthController::class, 'login']);
-Route::post('/auth/google', [GoogleAuthController::class, 'loginOrRegister']);
+Route::post('/auth/google', [GoogleAuthControllerApi::class, 'loginOrRegister']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/2fa/verify', [AuthController::class, 'verify2FA']);
 // post logout

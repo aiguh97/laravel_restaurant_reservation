@@ -85,10 +85,10 @@ return [
 
         'failover' => [
             'transport' => 'failover',
-            'mailers' => [
-                'smtp',
-                'log',
-            ],
+            // 'mailers' => [
+            //     'smtp',
+            //     'log',
+            // ],
         ],
     ],
 

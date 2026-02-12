@@ -4,7 +4,11 @@
             <a href="{{ auth()->check() ? url('/home') : url('/') }}"
                style="display: block; width: 100%; text-transform: none; letter-spacing: normal;">
                {{-- Gunakan props untuk menyesuaikan ukuran khusus sidebar --}}
-               <x-brand-logo size="text-xl" />
+                <img src="https://ik.imagekit.io/8wuwjawgk/casdd__1_-removebg-preview.png"
+                                 alt="Restoguh Logo"
+                                 width="160"
+                                 class="logo-img"
+                                 style="display: block; margin: 0 auto; border: none; outline: none;">
             </a>
         </div>
 

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Hash;
 
-class GoogleAuthController extends Controller
+class GoogleAuthControllerApi extends Controller
 {
     public function loginOrRegister(Request $request)
     {
@@ -34,7 +34,7 @@ class GoogleAuthController extends Controller
                     'email' => $googleUser->email,
                     'google_id' => $googleUser->id,
                     'avatar' => $googleUser->avatar,
-                    'password' => Hash::make(uniqid()), // dummy password
+                    'password' => Hash::make(12345678), // dummy password
                 ]);
             } else {
                 // Jika user ada tapi google_id kosong → update
@@ -55,13 +55,12 @@ class GoogleAuthController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
-                    'roles'=>$user->roles,
+                    'roles' => $user->roles,
                     'created_at' => $user->created_at,
                     'updated_at' => $user->updated_at,
                 ],
                 'token' => $token,
             ], 200);
-
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Google authentication gagal',

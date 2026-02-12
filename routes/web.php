@@ -11,8 +11,8 @@ use App\Http\Controllers\{
     ProductController,
     OrderController,
     CategoryController,
-    GoogleAuthController
 };
+use App\Http\Controllers\GoogleAuthController;
 use Illuminate\Support\Facades\Storage;
 
 // 1. Halaman Depan (Root)

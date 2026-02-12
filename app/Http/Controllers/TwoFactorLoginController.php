@@ -42,7 +42,7 @@ class TwoFactorLoginController extends Controller
             Mail::to($user->email)->send(new TwoFactorOtpMail($otp));
             return back()->with('success', 'Kode OTP telah dikirim ke email Anda.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal mengirim email. Silakan gunakan Google Authenticator.');
+            return back()->with('error', 'Gagal mengirim email. Silakan gunakan Google Authenticator.'.$e);
         }
     }
 
